@@ -99,7 +99,7 @@
 
     <!-- Top Sticky Header -->
     <header class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-100 px-3.5 py-2.5 flex items-center justify-between">
-      <!-- 좌측: 날짜 내비게이션 -->
+      <!-- 좌측: 날짜 내비게이션 (줄바꿈 방지) -->
       <div class="flex items-center space-x-1 whitespace-nowrap overflow-hidden">
         <button onclick="changeMonth(-1)" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 active:scale-90 transition text-slate-600 flex-shrink-0 cursor-pointer">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
@@ -113,14 +113,14 @@
         </button>
       </div>
 
-      <!-- 우측: 🔄 동기화 & ⚙️ 설정 -->
+      <!-- 우측: 🔄 동기화 & ⚙️ 통합 설정 -->
       <div class="flex items-center space-x-1.5 flex-shrink-0">
         <button id="btnHeaderCloudSync" onclick="syncPullFromGoogleSheet(true)" title="구글 시트 동기화" class="w-9 h-9 rounded-xl flex items-center justify-center bg-sky-50 hover:bg-sky-100 text-sky-600 active:scale-95 transition relative shadow-2xs cursor-pointer">
           <svg id="syncIconSvg" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
           <span id="syncStatusDot" class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-500"></span>
         </button>
 
-        <button onclick="openAppSettingsHubModal()" title="앱 설정 및 관리 허브" class="w-9 h-9 rounded-xl flex items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-700 active:scale-95 transition shadow-2xs cursor-pointer">
+        <button onclick="openAppSettingsHubModal()" title="가계부 전체 설정 & 허브" class="w-9 h-9 rounded-xl flex items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-700 active:scale-95 transition shadow-2xs cursor-pointer">
           <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3" stroke-width="2"/></svg>
         </button>
       </div>
@@ -388,17 +388,19 @@
 
     <!-- ==================== MODALS ==================== -->
 
-    <!-- 1. Expense Entry Modal Sheet -->
+    <!-- 1. Expense Entry & Edit Modal Sheet -->
     <div id="expenseModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex flex-col justify-end hidden opacity-0 transition-opacity duration-200">
       <div id="expenseSheetContent" class="modal-sheet closed w-full max-w-md mx-auto bg-white rounded-t-3xl p-5 max-h-[92vh] overflow-y-auto no-scrollbar shadow-2xl space-y-4">
         <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-          <h3 class="font-extrabold text-base text-slate-800">지출 내역 기록</h3>
+          <h3 id="expenseModalTitle" class="font-extrabold text-base text-slate-800">지출 내역 기록</h3>
           <button onclick="closeExpenseModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 cursor-pointer">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
 
         <form id="expenseForm" onsubmit="handleExpenseFormSubmit(event)" class="space-y-4">
+          <input type="hidden" id="editExpenseId" value="">
+          
           <!-- Date Input -->
           <div>
             <label class="block text-xs font-bold text-slate-600 mb-1">결제 일자</label>
@@ -486,7 +488,7 @@
           </div>
 
           <!-- Submit Button -->
-          <button type="submit" class="w-full py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 active:scale-[0.98] transition cursor-pointer">
+          <button type="submit" id="btnSubmitExpense" class="w-full py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 active:scale-[0.98] transition cursor-pointer">
             지출 저장하기
           </button>
         </form>
@@ -682,7 +684,7 @@
           </button>
         </div>
         <p class="text-xs text-slate-600 leading-relaxed">
-          지출을 등록하면 <span class="font-bold text-emerald-600">실시간 추가</span>되고, 앱에서 내역을 삭제하면 <span class="font-bold text-rose-600">구글 시트에서도 자동 삭제</span>되며, 모든 기기 간에 데이터가 실시간으로 동기화됩니다.
+          지출을 등록하면 <span class="font-bold text-emerald-600">실시간 추가</span>되고, 앱에서 내역을 삭제·수정하면 <span class="font-bold text-rose-600">구글 시트에서도 자동 갱신</span>되며 모든 기기 간에 데이터가 실시간으로 동기화됩니다.
         </p>
         <div>
           <label class="block text-[11px] font-bold text-slate-600 mb-1">배포된 Apps Script 웹 앱 URL</label>
@@ -728,9 +730,6 @@
           <div>
             <label class="block text-[10px] font-bold text-slate-500 mb-1">연도</label>
             <select id="pickerSelectYear" class="w-full px-2 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 cursor-pointer">
-              <option value="2025">2025년</option>
-              <option value="2026" selected>2026년</option>
-              <option value="2027">2027년</option>
             </select>
           </div>
           <div>
@@ -977,11 +976,11 @@
       }
     ];
 
-    let currentYear = 2026;
-    let currentMonth = 10;
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth() + 1;
     let currentTab = 'transactions';
     let currentFilter = 'all';
-    let selectedCalendarDate = '2026-10-02';
+    let selectedCalendarDate = '';
 
     let cards = [
       { id: 'card_samsung', name: '삼성카드', colorTheme: 'violet', payDay: 14, cycleType: 'prev_month_full', cycleStartDay: 1, cycleEndDay: 30 },
@@ -1632,7 +1631,7 @@
 
         return `
           <div class="rounded-2xl p-3 border shadow-xs flex items-center justify-between hover:shadow-sm transition ${rowCardClass}">
-            <div class="flex items-center space-x-3 overflow-hidden">
+            <div class="flex items-center space-x-3 overflow-hidden cursor-pointer" onclick="openEditExpenseModal('${item.id}')">
               <div class="w-10 h-10 rounded-2xl ${cat.iconBg} flex items-center justify-center text-lg flex-shrink-0 transition">
                 ${cat.icon}
               </div>
@@ -1650,9 +1649,17 @@
               </div>
             </div>
 
-            <div class="flex items-center space-x-2 flex-shrink-0 ml-2">
-              <span class="font-extrabold text-sm ${cat.isRedTheme ? 'text-red-600' : 'text-slate-900'} tracking-tight">-${Number(item.amount).toLocaleString('ko-KR')}원</span>
-              <button onclick="promptDeleteTransaction('${item.id}')" title="삭제" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-white/80 transition active:scale-90 cursor-pointer">
+            <!-- 수정(✏️) 및 삭제(🗑️) 버튼 영역 -->
+            <div class="flex items-center space-x-1 flex-shrink-0 ml-2">
+              <span class="font-extrabold text-sm ${cat.isRedTheme ? 'text-red-600' : 'text-slate-900'} tracking-tight mr-1">-${Number(item.amount).toLocaleString('ko-KR')}원</span>
+              
+              <!-- ✏️ 지출 수정 버튼 -->
+              <button onclick="openEditExpenseModal('${item.id}')" title="수정" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-indigo-600 hover:bg-white/90 transition active:scale-90 cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+              </button>
+
+              <!-- 🗑️ 지출 삭제 버튼 -->
+              <button onclick="promptDeleteTransaction('${item.id}')" title="삭제" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-white/90 transition active:scale-90 cursor-pointer">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
               </button>
             </div>
@@ -1843,13 +1850,16 @@
       container.innerHTML = dayTxs.map(t => {
         return `
           <div class="flex items-center justify-between text-xs py-2 px-3 bg-white rounded-xl border border-slate-100 shadow-2xs">
-            <div class="flex items-center space-x-1.5 truncate">
+            <div class="flex items-center space-x-1.5 truncate cursor-pointer" onclick="openEditExpenseModal('${t.id}')">
               <span class="font-extrabold text-slate-800">${escapeHtml(t.merchant)}</span>
               <span class="text-[10px] text-slate-400 font-medium">${t.isLoan ? '🏦 ' + escapeHtml(t.cardName || '계좌출금') : escapeHtml(t.cardName || '')}</span>
             </div>
-            <div class="flex items-center space-x-2">
-              <span class="font-bold text-slate-900">-${Number(t.amount).toLocaleString('ko-KR')}원</span>
-              <button onclick="promptDeleteTransaction('${t.id}')" class="text-slate-300 hover:text-rose-500 cursor-pointer">
+            <div class="flex items-center space-x-1.5">
+              <span class="font-bold text-slate-900 mr-0.5">-${Number(t.amount).toLocaleString('ko-KR')}원</span>
+              <button onclick="openEditExpenseModal('${t.id}')" title="수정" class="text-slate-400 hover:text-indigo-600 cursor-pointer p-0.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+              </button>
+              <button onclick="promptDeleteTransaction('${t.id}')" title="삭제" class="text-slate-300 hover:text-rose-500 cursor-pointer p-0.5">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
               </button>
             </div>
@@ -2283,13 +2293,18 @@
     }
 
     /* =========================================================
-       10. EXPENSE & LOAN FORMS HANDLING
+       10. EXPENSE ENTRY & EDIT HANDLING (⭐ 지출 내역 수정 기능)
        ========================================================= */
     function openExpenseModal(presetDate = null) {
       playTapSound('C5');
       const modal = document.getElementById('expenseModal');
       const sheet = document.getElementById('expenseSheetContent');
       
+      // 입력 모드로 초기화
+      document.getElementById('editExpenseId').value = '';
+      document.getElementById('expenseModalTitle').textContent = '지출 내역 기록';
+      document.getElementById('btnSubmitExpense').textContent = '지출 저장하기';
+
       document.getElementById('inputExpDate').value = presetDate || getTodayDateStr();
       document.getElementById('inputExpAmount').value = '';
       document.getElementById('inputExpMerchant').value = '';
@@ -2298,6 +2313,50 @@
       document.getElementById('fixedAutoSubOption').classList.add('hidden');
 
       setPaymentType('onetime');
+      renderModalCardSelector();
+      renderModalCategoryGrid();
+
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        sheet.classList.remove('closed');
+      }, 10);
+    }
+
+    // ⭐ 기존 지출 내역 수정 팝업 열기
+    function openEditExpenseModal(id) {
+      playTapSound('C5');
+      const tx = transactions.find(t => t.id === id);
+      if (!tx) return;
+
+      const modal = document.getElementById('expenseModal');
+      const sheet = document.getElementById('expenseSheetContent');
+
+      // 수정 모드로 설정
+      document.getElementById('editExpenseId').value = tx.id;
+      document.getElementById('expenseModalTitle').textContent = '지출 내역 수정 ✏️';
+      document.getElementById('btnSubmitExpense').textContent = '수정 내용 저장하기';
+
+      document.getElementById('inputExpDate').value = tx.date || getTodayDateStr();
+      document.getElementById('inputExpAmount').value = tx.amount || '';
+      document.getElementById('inputExpMerchant').value = tx.merchant || '';
+      document.getElementById('checkIsFixed').checked = !!tx.isFixed;
+      document.getElementById('checkAutoRecurring').checked = false;
+      
+      const fixedSub = document.getElementById('fixedAutoSubOption');
+      if (tx.isFixed) fixedSub.classList.remove('hidden');
+      else fixedSub.classList.add('hidden');
+
+      if (tx.isInstallment) {
+        setPaymentType('installment');
+        document.getElementById('selectInstallmentMonths').value = tx.installmentMonths || 3;
+        calculateInstallmentPreview();
+      } else {
+        setPaymentType('onetime');
+      }
+
+      selectedExpenseCardId = tx.cardId || (cards[0] ? cards[0].id : '');
+      selectedExpenseCategory = tx.category || 'food';
       renderModalCardSelector();
       renderModalCategoryGrid();
 
@@ -2416,6 +2475,7 @@
 
     function handleExpenseFormSubmit(e) {
       e.preventDefault();
+      const editId = document.getElementById('editExpenseId').value;
       const dateVal = document.getElementById('inputExpDate').value;
       const totalAmount = Number(document.getElementById('inputExpAmount').value) || 0;
       const merchant = document.getElementById('inputExpMerchant').value.trim();
@@ -2427,6 +2487,43 @@
       const card = cards.find(c => c.id === selectedExpenseCardId) || cards[0];
       const cat = CATEGORIES.find(c => c.id === selectedExpenseCategory) || CATEGORIES[0];
 
+      // ⭐ 1. [기존 지출 내역 수정 처리]
+      if (editId) {
+        const txIndex = transactions.findIndex(t => t.id === editId);
+        if (txIndex !== -1) {
+          const oldTx = Object.assign({}, transactions[txIndex]);
+          
+          const updatedTx = {
+            ...oldTx,
+            date: dateVal,
+            amount: totalAmount,
+            merchant: merchant,
+            cardId: card.id,
+            cardName: card.name,
+            category: cat.id,
+            categoryName: cat.name,
+            isFixed: isFixed
+          };
+
+          transactions[txIndex] = updatedTx;
+          saveTransactions();
+
+          // 구글 시트 양방향 수정 반영: 기존 행 삭제 후 수정된 최신 내용 삽입
+          if (googleSheetWebhookUrl) {
+            syncDeleteGoogleSheet(oldTx);
+            setTimeout(() => {
+              syncAddGoogleSheet(updatedTx);
+            }, 400);
+          }
+
+          showToast('지출 내역이 성공적으로 수정되었습니다! ✏️');
+          closeExpenseModal();
+          refreshApp();
+          return;
+        }
+      }
+
+      // ⭐ 2. [새 지출 내역 추가 처리]
       if (currentExpensePaymentType === 'installment') {
         const months = Number(document.getElementById('selectInstallmentMonths').value) || 3;
         const monthlyBase = Math.floor(totalAmount / months);
