@@ -190,7 +190,7 @@
             <span id="statTotalActualExpense" class="text-lg font-black text-emerald-300">0원</span>
           </div>
 
-          <!-- 4-Way Breakdown (변동/현금/고정/대출) -->
+          <!-- 4-Way Breakdown (카드변동/현금이체/고정/대출) -->
           <div class="grid grid-cols-4 gap-1.5 text-center text-xs">
             <div class="bg-white/5 rounded-xl py-2 px-1">
               <span class="block text-[10px] text-slate-400 mb-0.5">카드 변동</span>
@@ -272,7 +272,7 @@
       <!-- 6. Transaction List Section -->
       <section class="space-y-2">
         <div class="flex items-center justify-between text-xs font-bold text-slate-600">
-          <span>지출 내역 목록</span>
+          <span id="txListHeadingTitle">🛍️ 일상 생활비 지출 목록</span>
           <span id="filteredListCount" class="text-slate-400">총 0건</span>
         </div>
         <div id="transactionList" class="space-y-2.5"></div>
@@ -901,7 +901,7 @@
       }
     };
 
-    // 12 카테고리 (3x4 그리드 균형 배치 + 곗돈/경조사비 전용 카테고리 포함)
+    // 12 카테고리 (편의점 무조건 빨간색 테마 & 곗돈/경조사비 전용 카테고리 포함)
     const CATEGORIES = [
       { 
         id: 'convenience', 
@@ -916,7 +916,7 @@
       { 
         id: 'food', 
         name: '식비', 
-        icon: '🍽️️', 
+        icon: '🍽', 
         iconBg: 'bg-orange-100 text-orange-600', 
         cardStyle: 'bg-orange-50/70 border-orange-200/90 border-l-4 border-l-orange-400 text-orange-950',
         badgeClass: 'bg-orange-100 text-orange-700',
@@ -1017,7 +1017,7 @@
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth() + 1;
     let currentTab = 'transactions';
-    let currentFilter = 'all';
+    let currentFilter = 'daily'; // 기본 보기: 일상 생활비(변동카드+현금)
     let selectedCalendarDate = '';
 
     let cards = [
@@ -1030,6 +1030,7 @@
     let transactions = [];
     let loans = [];
     let recurringTemplates = [];
+    let deletedTxIds = [];
     let googleSheetWebhookUrl = DEFAULT_WEBHOOK_URL;
     let currentExpensePaymentType = 'onetime';
     let selectedExpenseCardId = 'card_samsung'; // 'cash' or card id
@@ -1144,12 +1145,15 @@
     });
 
     /* =========================================================
-       3. STORAGE & TWO-WAY SYNC
+       3. STORAGE & TWO-WAY SYNC (Safe Merge & No Data Wipe)
        ========================================================= */
     function loadSavedState() {
       try {
         const savedCards = safeStorage.get('my_cards_v4');
         if (savedCards) cards = JSON.parse(savedCards);
+
+        const savedDeleted = safeStorage.get('my_deleted_tx_ids');
+        if (savedDeleted) deletedTxIds = JSON.parse(savedDeleted);
 
         const savedTxs = safeStorage.get('my_transactions_v4');
         if (savedTxs) {
@@ -1207,7 +1211,7 @@
       if (dot) dot.className = 'absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-400 animate-ping';
 
       if (isManual) {
-        showToast('☁️ 구글 시트에서 최신 데이터를 불러옵니다...');
+        showToast('☁️ 구글 시트와 양방향 동기화 중...');
       }
 
       try {
@@ -1217,21 +1221,31 @@
 
         if (data && data.status === "SUCCESS") {
           if (Array.isArray(data.transactions)) {
-            transactions = data.transactions.map(item => {
-              const matchedCat = CATEGORIES.find(c => c.id === item.category || c.name === item.category || c.name === item.categoryName);
-              const isCashTx = (item.cardId === 'cash') || (item.cardName && (item.cardName.includes('현금') || item.cardName.includes('이체')));
-              const matchedCard = isCashTx ? null : cards.find(c => c.id === item.cardId || c.name === item.cardName);
+            // 원격 데이터 정제
+            const remoteParsed = data.transactions
+              .filter(item => !deletedTxIds.includes(item.id))
+              .map(item => {
+                const matchedCat = CATEGORIES.find(c => c.id === item.category || c.name === item.category || c.name === item.categoryName);
+                const isCashTx = (item.cardId === 'cash') || (item.cardName && (item.cardName.includes('현금') || item.cardName.includes('이체')));
+                const matchedCard = isCashTx ? null : cards.find(c => c.id === item.cardId || c.name === item.cardName);
 
-              return {
-                ...item,
-                amount: Number(item.amount) || 0,
-                category: matchedCat ? matchedCat.id : (item.category || 'etc'),
-                categoryName: matchedCat ? matchedCat.name : (item.categoryName || '기타/이체'),
-                isCash: isCashTx,
-                cardId: isCashTx ? 'cash' : (matchedCard ? matchedCard.id : (item.cardId || '')),
-                cardName: isCashTx ? '현금/계좌이체' : (matchedCard ? matchedCard.name : (item.cardName || ''))
-              };
+                return {
+                  ...item,
+                  amount: Number(item.amount) || 0,
+                  category: matchedCat ? matchedCat.id : (item.category || 'etc'),
+                  categoryName: matchedCat ? matchedCat.name : (item.categoryName || '기타/이체'),
+                  isCash: isCashTx,
+                  cardId: isCashTx ? 'cash' : (matchedCard ? matchedCard.id : (item.cardId || '')),
+                  cardName: isCashTx ? '현금/계좌이체' : (matchedCard ? matchedCard.name : (item.cardName || ''))
+                };
+              });
+
+            // 안전한 양방향 병합: 로컬에만 있는 최신 내역 보존
+            const localMap = new Map(transactions.map(t => [t.id, t]));
+            remoteParsed.forEach(remTx => {
+              localMap.set(remTx.id, remTx);
             });
+            transactions = Array.from(localMap.values());
             saveTransactions();
           }
 
@@ -1252,12 +1266,12 @@
 
           refreshApp();
           if (dot) dot.className = 'absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-500';
-          if (isManual) showToast('✅ 최신 데이터 동기화 완료!');
+          if (isManual) showToast('✅ 동기화 완료!');
         }
       } catch (err) {
         console.warn("Sheet Pull Warning:", err);
         if (dot) dot.className = 'absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500';
-        if (isManual) showToast('동기화 실패 (네트워크 또는 배포 상태 확인 필요)');
+        if (isManual) showToast('동기화 실패 (네트워크 연결 확인 필요)');
       } finally {
         isSyncing = false;
         if (syncIcon) syncIcon.classList.remove('spinning');
@@ -1426,6 +1440,9 @@
       document.getElementById('settingsHubModal').classList.add('hidden');
     }
 
+    /* =========================================================
+       5. DASHBOARD STATS & BREAKDOWNS
+       ========================================================= */
     function renderDashboard() {
       const monthTxs = getMonthTransactions();
 
@@ -1585,11 +1602,14 @@
     function renderFilterChips() {
       const container = document.getElementById('filterChipBar');
       let chipsHtml = `
+        <button onclick="setFilter('daily')" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1 cursor-pointer ${currentFilter === 'daily' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100'}">
+          <span>🛍️</span><span>일상 생활비</span>
+        </button>
         <button onclick="setFilter('all')" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${currentFilter === 'all' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">전체 보기</button>
         <button onclick="setFilter('cash')" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1 cursor-pointer ${currentFilter === 'cash' ? 'bg-emerald-600 text-white' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'}">
           <span>💵</span><span>현금/이체</span>
         </button>
-        <button onclick="setFilter('fixed')" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${currentFilter === 'fixed' ? 'bg-indigo-600 text-white' : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100'}">고정지출</button>
+        <button onclick="setFilter('fixed')" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${currentFilter === 'fixed' ? 'bg-amber-600 text-white' : 'bg-amber-50 text-amber-700 hover:bg-amber-100'}">고정지출</button>
         <button onclick="setFilter('installment')" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${currentFilter === 'installment' ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-700 hover:bg-blue-100'}">할부</button>
         <button onclick="setFilter('loan')" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${currentFilter === 'loan' ? 'bg-rose-600 text-white' : 'bg-rose-50 text-rose-700 hover:bg-rose-100'}">대출상환(계좌)</button>
       `;
@@ -1617,7 +1637,7 @@
     }
 
     function selectFilterCard(cardId) {
-      if (currentFilter === cardId) setFilter('all');
+      if (currentFilter === cardId) setFilter('daily');
       else setFilter(cardId);
     }
 
@@ -1625,20 +1645,34 @@
       const monthTxs = getMonthTransactions();
       let filtered = monthTxs;
 
-      if (currentFilter === 'cash') {
+      const titleEl = document.getElementById('txListHeadingTitle');
+
+      if (currentFilter === 'daily') {
+        filtered = monthTxs.filter(t => !t.isFixed && !t.isLoan);
+        if (titleEl) titleEl.textContent = '🛍️ 일상 생활비 지출 목록';
+      } else if (currentFilter === 'cash') {
         filtered = monthTxs.filter(t => t.cardId === 'cash' || t.isCash);
+        if (titleEl) titleEl.textContent = '💵 현금/이체 지출 내역';
       } else if (currentFilter === 'fixed') {
         filtered = monthTxs.filter(t => t.isFixed);
+        if (titleEl) titleEl.textContent = '📌 매월 고정 지출 내역';
       } else if (currentFilter === 'installment') {
         filtered = monthTxs.filter(t => t.isInstallment);
+        if (titleEl) titleEl.textContent = '💳 카드 할부 지출 내역';
       } else if (currentFilter === 'loan') {
         filtered = monthTxs.filter(t => t.isLoan);
+        if (titleEl) titleEl.textContent = '🏦 대출 원리금 상환 내역';
       } else if (currentFilter !== 'all') {
         filtered = monthTxs.filter(t => t.cardId === currentFilter);
+        const cardObj = cards.find(c => c.id === currentFilter);
+        if (titleEl) titleEl.textContent = `💳 ${cardObj ? cardObj.name : '카드'} 지출 내역`;
+      } else {
+        if (titleEl) titleEl.textContent = '📋 전체 지출 내역 목록';
       }
 
       filtered.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-      document.getElementById('filteredListCount').textContent = `총 ${filtered.length}건`;
+      const filteredSum = filtered.reduce((s, t) => s + (Number(t.amount) || 0), 0);
+      document.getElementById('filteredListCount').textContent = `총 ${filtered.length}건 (${filteredSum.toLocaleString('ko-KR')}원)`;
       const container = document.getElementById('transactionList');
 
       if (filtered.length === 0) {
@@ -1647,7 +1681,7 @@
             <div class="w-12 h-12 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-slate-300">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
             </div>
-            <p class="text-xs font-semibold">지출 내역이 없습니다</p>
+            <p class="text-xs font-semibold">조건에 맞는 지출 내역이 없습니다</p>
           </div>
         `;
         return;
@@ -1689,7 +1723,7 @@
 
         return `
           <div class="rounded-2xl p-3 border shadow-xs flex items-center justify-between hover:shadow-sm transition ${rowCardClass}">
-            <div class="flex items-center space-x-3 overflow-hidden cursor-pointer" onclick="openEditExpenseModal('${item.id}')">
+            <div class="flex items-center space-x-3 overflow-hidden cursor-pointer flex-1" onclick="openEditExpenseModal('${item.id}')">
               <div class="w-10 h-10 rounded-2xl ${cat.iconBg} flex items-center justify-center text-lg flex-shrink-0 transition">
                 ${cat.icon}
               </div>
@@ -1739,6 +1773,13 @@
 
       pendingConfirmAction = () => {
         transactions = transactions.filter(t => t.id !== id);
+        
+        // 삭제된 ID를 기록하여 구글 시트 동기화 시 재출현 방지
+        if (!deletedTxIds.includes(id)) {
+          deletedTxIds.push(id);
+          safeStorage.set('my_deleted_tx_ids', JSON.stringify(deletedTxIds.slice(-200)));
+        }
+
         saveTransactions();
         refreshApp();
         syncDeleteGoogleSheet(item);
@@ -1763,6 +1804,12 @@
       pendingConfirmAction = () => {
         const monthPrefix = `${currentYear}-${String(currentMonth).padStart(2, '0')}`;
         const toDeleteList = transactions.filter(t => t.date && t.date.startsWith(monthPrefix));
+        
+        toDeleteList.forEach(t => {
+          if (!deletedTxIds.includes(t.id)) deletedTxIds.push(t.id);
+        });
+        safeStorage.set('my_deleted_tx_ids', JSON.stringify(deletedTxIds.slice(-200)));
+
         transactions = transactions.filter(t => !t.date || !t.date.startsWith(monthPrefix));
         saveTransactions();
         refreshApp();
@@ -3057,4 +3104,3 @@
   </script>
 </body>
 </html>
-```
