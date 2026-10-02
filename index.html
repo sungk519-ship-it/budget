@@ -64,6 +64,7 @@
       <div>
         <h2 class="text-xl font-extrabold tracking-tight">마이 가계부</h2>
         <p id="lockScreenSubText" class="text-xs text-slate-400 mt-1 font-medium">보안을 위해 4자리 비밀번호를 입력해주세요</p>
+        <p class="text-[10px] text-slate-500 mt-0.5 font-normal">(노트북 키보드 숫자키 입력 지원)</p>
       </div>
       
       <!-- 4 PIN Dots -->
@@ -75,20 +76,20 @@
       </div>
     </div>
 
-    <!-- Keypad Grid -->
+    <!-- Keypad Grid (Supports both touch/mouse click and physical keyboard) -->
     <div class="w-full max-w-xs grid grid-cols-3 gap-3.5 pb-6">
-      <button onclick="pressPinKey('1')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition">1</button>
-      <button onclick="pressPinKey('2')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition">2</button>
-      <button onclick="pressPinKey('3')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition">3</button>
-      <button onclick="pressPinKey('4')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition">4</button>
-      <button onclick="pressPinKey('5')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition">5</button>
-      <button onclick="pressPinKey('6')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition">6</button>
-      <button onclick="pressPinKey('7')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition">7</button>
-      <button onclick="pressPinKey('8')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition">8</button>
-      <button onclick="pressPinKey('9')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition">9</button>
-      <button onclick="resetPinInput()" class="h-16 rounded-2xl text-xs font-bold text-slate-400 hover:text-white flex items-center justify-center active:scale-95 transition">전체삭제</button>
-      <button onclick="pressPinKey('0')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition">0</button>
-      <button onclick="deletePinLast()" class="h-16 rounded-2xl text-slate-300 hover:text-white flex items-center justify-center active:scale-95 transition">
+      <button onclick="pressPinKey('1')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition cursor-pointer">1</button>
+      <button onclick="pressPinKey('2')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition cursor-pointer">2</button>
+      <button onclick="pressPinKey('3')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition cursor-pointer">3</button>
+      <button onclick="pressPinKey('4')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition cursor-pointer">4</button>
+      <button onclick="pressPinKey('5')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition cursor-pointer">5</button>
+      <button onclick="pressPinKey('6')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition cursor-pointer">6</button>
+      <button onclick="pressPinKey('7')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition cursor-pointer">7</button>
+      <button onclick="pressPinKey('8')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition cursor-pointer">8</button>
+      <button onclick="pressPinKey('9')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition cursor-pointer">9</button>
+      <button onclick="resetPinInput()" class="h-16 rounded-2xl text-xs font-bold text-slate-400 hover:text-white flex items-center justify-center active:scale-95 transition cursor-pointer">전체삭제</button>
+      <button onclick="pressPinKey('0')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition cursor-pointer">0</button>
+      <button onclick="deletePinLast()" class="h-16 rounded-2xl text-slate-300 hover:text-white flex items-center justify-center active:scale-95 transition cursor-pointer">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-7.172a2 2 0 00-1.414.586L3 12z"/></svg>
       </button>
     </div>
@@ -100,26 +101,26 @@
     <header class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-100 px-3.5 py-2.5 flex items-center justify-between">
       <!-- 좌측: 날짜 내비게이션 -->
       <div class="flex items-center space-x-1 whitespace-nowrap overflow-hidden">
-        <button onclick="changeMonth(-1)" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 active:scale-90 transition text-slate-600 flex-shrink-0">
+        <button onclick="changeMonth(-1)" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 active:scale-90 transition text-slate-600 flex-shrink-0 cursor-pointer">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
         </button>
-        <button onclick="openMonthPickerModal()" class="flex items-center space-x-1 font-black text-base text-slate-900 hover:text-indigo-600 transition whitespace-nowrap">
+        <button onclick="openMonthPickerModal()" class="flex items-center space-x-1 font-black text-base text-slate-900 hover:text-indigo-600 transition whitespace-nowrap cursor-pointer">
           <span id="currentMonthLabel" class="whitespace-nowrap">2026년 10월</span>
           <svg class="w-3.5 h-3.5 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
         </button>
-        <button onclick="changeMonth(1)" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 active:scale-90 transition text-slate-600 flex-shrink-0">
+        <button onclick="changeMonth(1)" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 active:scale-90 transition text-slate-600 flex-shrink-0 cursor-pointer">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
         </button>
       </div>
 
       <!-- 우측: 🔄 동기화 & ⚙️ 설정 -->
       <div class="flex items-center space-x-1.5 flex-shrink-0">
-        <button id="btnHeaderCloudSync" onclick="syncPullFromGoogleSheet(true)" title="구글 시트 동기화" class="w-9 h-9 rounded-xl flex items-center justify-center bg-sky-50 hover:bg-sky-100 text-sky-600 active:scale-95 transition relative shadow-2xs">
+        <button id="btnHeaderCloudSync" onclick="syncPullFromGoogleSheet(true)" title="구글 시트 동기화" class="w-9 h-9 rounded-xl flex items-center justify-center bg-sky-50 hover:bg-sky-100 text-sky-600 active:scale-95 transition relative shadow-2xs cursor-pointer">
           <svg id="syncIconSvg" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
           <span id="syncStatusDot" class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-500"></span>
         </button>
 
-        <button onclick="openAppSettingsHubModal()" title="앱 설정 및 관리 허브" class="w-9 h-9 rounded-xl flex items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-700 active:scale-95 transition shadow-2xs">
+        <button onclick="openAppSettingsHubModal()" title="앱 설정 및 관리 허브" class="w-9 h-9 rounded-xl flex items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-700 active:scale-95 transition shadow-2xs cursor-pointer">
           <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3" stroke-width="2"/></svg>
         </button>
       </div>
@@ -127,13 +128,13 @@
 
     <!-- Top Tab Navigation -->
     <nav class="bg-white px-4 pt-2 pb-1 border-b border-slate-100 grid grid-cols-3 gap-1">
-      <button id="tabBtnTransactions" onclick="switchMainTab('transactions')" class="py-2 text-xs font-bold rounded-xl transition flex flex-col items-center justify-center bg-indigo-50 text-indigo-600">
+      <button id="tabBtnTransactions" onclick="switchMainTab('transactions')" class="py-2 text-xs font-bold rounded-xl transition flex flex-col items-center justify-center bg-indigo-50 text-indigo-600 cursor-pointer">
         <span>내역 · 요약</span>
       </button>
-      <button id="tabBtnCalendar" onclick="switchMainTab('calendar')" class="py-2 text-xs font-bold rounded-xl transition flex flex-col items-center justify-center text-slate-500 hover:bg-slate-50">
+      <button id="tabBtnCalendar" onclick="switchMainTab('calendar')" class="py-2 text-xs font-bold rounded-xl transition flex flex-col items-center justify-center text-slate-500 hover:bg-slate-50 cursor-pointer">
         <span>월간 달력</span>
       </button>
-      <button id="tabBtnLoans" onclick="switchMainTab('loans')" class="py-2 text-xs font-bold rounded-xl transition flex flex-col items-center justify-center text-slate-500 hover:bg-slate-50 relative">
+      <button id="tabBtnLoans" onclick="switchMainTab('loans')" class="py-2 text-xs font-bold rounded-xl transition flex flex-col items-center justify-center text-slate-500 hover:bg-slate-50 relative cursor-pointer">
         <span>대출 관리</span>
         <span id="loanTabBadge" class="hidden absolute top-1 right-2 w-2 h-2 rounded-full bg-rose-500"></span>
       </button>
@@ -214,7 +215,7 @@
             <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
             <h3 class="text-xs font-extrabold text-slate-800">신용카드별 결제일 & 청구 예정액</h3>
           </div>
-          <button onclick="openCardSettingsModal()" class="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 flex items-center space-x-0.5">
+          <button onclick="openCardSettingsModal()" class="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 flex items-center space-x-0.5 cursor-pointer">
             <span>결제일·기간설정</span>
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
           </button>
@@ -247,7 +248,7 @@
             <span class="text-xs font-bold text-slate-700">이번 달 고정지출 현황</span>
             <span id="fixedCountBadge" class="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded-full font-bold">0건</span>
           </div>
-          <button onclick="openRecurringModal()" class="text-[11px] font-semibold text-amber-700 hover:text-amber-900">템플릿 관리</button>
+          <button onclick="openRecurringModal()" class="text-[11px] font-semibold text-amber-700 hover:text-amber-900 cursor-pointer">템플릿 관리</button>
         </div>
         <div id="fixedExpenseQuickList" class="space-y-1.5 pt-1">
           <div class="text-[11px] text-slate-400 text-center py-1">등록된 고정지출이 없습니다.</div>
@@ -258,7 +259,7 @@
       <section class="space-y-2">
         <div class="flex items-center justify-between">
           <div id="filterChipBar" class="flex space-x-1.5 overflow-x-auto no-scrollbar py-1"></div>
-          <button onclick="promptClearMonth()" title="이번 달 내역 전체 삭제" class="w-7 h-7 rounded-lg flex-shrink-0 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition ml-1">
+          <button onclick="promptClearMonth()" title="이번 달 내역 전체 삭제" class="w-7 h-7 rounded-lg flex-shrink-0 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition ml-1 cursor-pointer">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
           </button>
         </div>
@@ -371,7 +372,7 @@
             <span class="text-xs font-extrabold text-slate-700">관리 중인 대출 목록</span>
             <span class="text-[10px] bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded font-bold">전용 계좌 출금</span>
           </div>
-          <button onclick="openLoanModal()" class="text-xs font-bold text-indigo-600 hover:text-indigo-800">+ 대출 추가</button>
+          <button onclick="openLoanModal()" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 cursor-pointer">+ 대출 추가</button>
         </div>
         <div id="loanCardList" class="space-y-3"></div>
       </section>
@@ -379,7 +380,7 @@
 
     <!-- Bottom Floating Action Button (FAB) -->
     <div class="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-md px-4 pointer-events-none z-30">
-      <button id="floatingActionButton" onclick="handleFabClick()" class="pointer-events-auto w-full py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl font-bold text-sm shadow-xl active:scale-[0.98] transition flex items-center justify-center space-x-2">
+      <button id="floatingActionButton" onclick="handleFabClick()" class="pointer-events-auto w-full py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl font-bold text-sm shadow-xl active:scale-[0.98] transition flex items-center justify-center space-x-2 cursor-pointer">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
         <span id="fabButtonLabel">새 지출 기록하기</span>
       </button>
@@ -392,7 +393,7 @@
       <div id="expenseSheetContent" class="modal-sheet closed w-full max-w-md mx-auto bg-white rounded-t-3xl p-5 max-h-[92vh] overflow-y-auto no-scrollbar shadow-2xl space-y-4">
         <div class="flex items-center justify-between pb-2 border-b border-slate-100">
           <h3 class="font-extrabold text-base text-slate-800">지출 내역 기록</h3>
-          <button onclick="closeExpenseModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100">
+          <button onclick="closeExpenseModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 cursor-pointer">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
@@ -413,11 +414,11 @@
             </div>
             <!-- Quick Chips -->
             <div class="grid grid-cols-5 gap-1.5 mt-2">
-              <button type="button" onclick="addAmountToInput(1000)" class="py-1.5 rounded-lg bg-slate-100 text-xs font-bold text-slate-700 hover:bg-indigo-50 active:scale-95 transition">+1천</button>
-              <button type="button" onclick="addAmountToInput(5000)" class="py-1.5 rounded-lg bg-slate-100 text-xs font-bold text-slate-700 hover:bg-indigo-50 active:scale-95 transition">+5천</button>
-              <button type="button" onclick="addAmountToInput(10000)" class="py-1.5 rounded-lg bg-slate-100 text-xs font-bold text-slate-700 hover:bg-indigo-50 active:scale-95 transition">+1만</button>
-              <button type="button" onclick="addAmountToInput(50000)" class="py-1.5 rounded-lg bg-slate-100 text-xs font-bold text-slate-700 hover:bg-indigo-50 active:scale-95 transition">+5만</button>
-              <button type="button" onclick="clearAmountInput()" class="py-1.5 rounded-lg bg-rose-50 text-xs font-bold text-rose-600 hover:bg-rose-100 active:scale-95 transition">정정</button>
+              <button type="button" onclick="addAmountToInput(1000)" class="py-1.5 rounded-lg bg-slate-100 text-xs font-bold text-slate-700 hover:bg-indigo-50 active:scale-95 transition cursor-pointer">+1천</button>
+              <button type="button" onclick="addAmountToInput(5000)" class="py-1.5 rounded-lg bg-slate-100 text-xs font-bold text-slate-700 hover:bg-indigo-50 active:scale-95 transition cursor-pointer">+5천</button>
+              <button type="button" onclick="addAmountToInput(10000)" class="py-1.5 rounded-lg bg-slate-100 text-xs font-bold text-slate-700 hover:bg-indigo-50 active:scale-95 transition cursor-pointer">+1만</button>
+              <button type="button" onclick="addAmountToInput(50000)" class="py-1.5 rounded-lg bg-slate-100 text-xs font-bold text-slate-700 hover:bg-indigo-50 active:scale-95 transition cursor-pointer">+5만</button>
+              <button type="button" onclick="clearAmountInput()" class="py-1.5 rounded-lg bg-rose-50 text-xs font-bold text-rose-600 hover:bg-rose-100 active:scale-95 transition cursor-pointer">정정</button>
             </div>
           </div>
 
@@ -426,8 +427,8 @@
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold text-slate-700">결제 방식</span>
               <div class="flex bg-slate-200 p-0.5 rounded-xl text-xs font-bold">
-                <button type="button" id="btnModeOnetime" onclick="setPaymentType('onetime')" class="px-3 py-1 rounded-lg bg-white text-indigo-600 shadow-sm transition">일시불</button>
-                <button type="button" id="btnModeInstallment" onclick="setPaymentType('installment')" class="px-3 py-1 rounded-lg text-slate-600 transition">할부</button>
+                <button type="button" id="btnModeOnetime" onclick="setPaymentType('onetime')" class="px-3 py-1 rounded-lg bg-white text-indigo-600 shadow-sm transition cursor-pointer">일시불</button>
+                <button type="button" id="btnModeInstallment" onclick="setPaymentType('installment')" class="px-3 py-1 rounded-lg text-slate-600 transition cursor-pointer">할부</button>
               </div>
             </div>
 
@@ -435,7 +436,7 @@
             <div id="installmentConfigBox" class="hidden pt-2 border-t border-slate-200 space-y-1.5">
               <div class="flex items-center justify-between text-xs">
                 <span class="font-bold text-slate-600">할부 개월 수</span>
-                <select id="selectInstallmentMonths" onchange="calculateInstallmentPreview()" class="px-3 py-1.5 bg-white border border-slate-200 rounded-xl font-bold text-slate-800 text-xs focus:ring-2 focus:ring-indigo-500">
+                <select id="selectInstallmentMonths" onchange="calculateInstallmentPreview()" class="px-3 py-1.5 bg-white border border-slate-200 rounded-xl font-bold text-slate-800 text-xs focus:ring-2 focus:ring-indigo-500 cursor-pointer">
                   <option value="2">2개월 할부</option>
                   <option value="3" selected>3개월 할부</option>
                   <option value="4">4개월 할부</option>
@@ -476,16 +477,16 @@
           <div class="p-3 bg-indigo-50/70 border border-indigo-100 rounded-2xl space-y-2">
             <div class="flex items-center justify-between">
               <label for="checkIsFixed" class="text-xs font-bold text-slate-700 cursor-pointer">매달 나가는 고정지출</label>
-              <input type="checkbox" id="checkIsFixed" onchange="toggleFixedSubOption()" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500">
+              <input type="checkbox" id="checkIsFixed" onchange="toggleFixedSubOption()" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer">
             </div>
             <div id="fixedAutoSubOption" class="hidden pt-1.5 border-t border-indigo-200/50 flex items-center justify-between">
               <label for="checkAutoRecurring" class="text-[11px] text-slate-600 cursor-pointer">매월 이 날짜에 자동 등록</label>
-              <input type="checkbox" id="checkAutoRecurring" class="w-3.5 h-3.5 rounded text-indigo-600 focus:ring-indigo-500">
+              <input type="checkbox" id="checkAutoRecurring" class="w-3.5 h-3.5 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer">
             </div>
           </div>
 
           <!-- Submit Button -->
-          <button type="submit" class="w-full py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 active:scale-[0.98] transition">
+          <button type="submit" class="w-full py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 active:scale-[0.98] transition cursor-pointer">
             지출 저장하기
           </button>
         </form>
@@ -501,8 +502,8 @@
         <h4 id="confirmTitle" class="text-sm font-extrabold text-slate-800">지출 내역 삭제</h4>
         <p id="confirmDesc" class="text-xs text-slate-600 whitespace-pre-line leading-relaxed">이 내역을 삭제하시겠습니까?<br><span class="text-[10px] text-emerald-600 font-bold">(구글 스프레드시트에서도 함께 삭제됩니다)</span></p>
         <div class="grid grid-cols-2 gap-2 pt-2">
-          <button onclick="closeConfirmDialog()" class="py-2.5 rounded-xl bg-slate-100 text-xs font-bold text-slate-600 hover:bg-slate-200 active:scale-95 transition">취소</button>
-          <button id="btnExecuteConfirm" class="py-2.5 rounded-xl bg-rose-600 text-xs font-bold text-white hover:bg-rose-700 shadow-md shadow-rose-600/20 active:scale-95 transition">삭제하기</button>
+          <button onclick="closeConfirmDialog()" class="py-2.5 rounded-xl bg-slate-100 text-xs font-bold text-slate-600 hover:bg-slate-200 active:scale-95 transition cursor-pointer">취소</button>
+          <button id="btnExecuteConfirm" class="py-2.5 rounded-xl bg-rose-600 text-xs font-bold text-white hover:bg-rose-700 shadow-md shadow-rose-600/20 active:scale-95 transition cursor-pointer">삭제하기</button>
         </div>
       </div>
     </div>
@@ -515,7 +516,7 @@
             <h3 class="font-extrabold text-base text-slate-800">대출 등록 및 계획</h3>
             <span class="text-[11px] text-rose-600 font-bold">※ 지정 계좌 출금 & 매월 납입 예정액 직접 입력</span>
           </div>
-          <button onclick="closeLoanModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100">
+          <button onclick="closeLoanModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 cursor-pointer">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
@@ -572,7 +573,7 @@
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-600 mb-1">매월 납입일 (달력 빨간표시)</label>
-              <select id="selectLoanPayDay" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <select id="selectLoanPayDay" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
               </select>
             </div>
           </div>
@@ -591,7 +592,7 @@
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="block text-xs font-bold text-slate-600 mb-1">상환 방식</label>
-              <select id="selectLoanType" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <select id="selectLoanType" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
                 <option value="equal_principal_interest">원리금 균등상환</option>
                 <option value="equal_principal">원금 균등상환</option>
                 <option value="bullet">만기 일시상환</option>
@@ -603,7 +604,7 @@
             </div>
           </div>
 
-          <button type="submit" class="w-full py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 active:scale-[0.98] transition">
+          <button type="submit" class="w-full py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 active:scale-[0.98] transition cursor-pointer">
             대출 정보 저장하기
           </button>
         </form>
@@ -618,7 +619,7 @@
             <h4 id="repayModalLoanTitle" class="text-sm font-extrabold text-slate-800">대출 상환 기록</h4>
             <span id="repayModalAccountBadge" class="text-[10px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full font-bold">계좌 출금</span>
           </div>
-          <button onclick="closeLoanRepayModal()" class="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100">
+          <button onclick="closeLoanRepayModal()" class="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 cursor-pointer">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
@@ -640,7 +641,7 @@
             <label class="block text-[11px] font-bold text-slate-600 mb-1">납입한 이자 (원)</label>
             <input type="number" id="inputRepayInterest" min="0" placeholder="0" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm font-bold text-amber-600">
           </div>
-          <button type="submit" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/30 active:scale-95 transition">
+          <button type="submit" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/30 active:scale-95 transition cursor-pointer">
             계좌 상환 완료 & 잔액 차감
           </button>
         </form>
@@ -655,14 +656,14 @@
             <h3 class="font-extrabold text-base text-slate-800">신용카드 결제일 & 이용기간 설정</h3>
             <span class="text-[11px] text-slate-400">카드별 결제일과 청구 산정 기간을 맞춤 설정하세요</span>
           </div>
-          <button onclick="closeCardSettingsModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100">
+          <button onclick="closeCardSettingsModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 cursor-pointer">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
         
         <div id="cardSettingsList" class="space-y-4"></div>
 
-        <button onclick="saveCardSettings()" class="w-full py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 active:scale-[0.98] transition">
+        <button onclick="saveCardSettings()" class="w-full py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 active:scale-[0.98] transition cursor-pointer">
           카드 결제 기준 저장하기
         </button>
       </div>
@@ -676,7 +677,7 @@
             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
             <h4 class="text-sm font-extrabold text-slate-800">구글 시트 실시간 연동</h4>
           </div>
-          <button onclick="closeGoogleSheetModal()" class="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100">
+          <button onclick="closeGoogleSheetModal()" class="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 cursor-pointer">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
@@ -689,11 +690,11 @@
         </div>
         <div class="space-y-2">
           <div class="flex space-x-2">
-            <button onclick="saveGoogleSheetUrl()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 shadow-md shadow-emerald-600/20 active:scale-95 transition">URL 저장</button>
-            <button onclick="testGoogleSheetSync()" class="px-3 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200 active:scale-95 transition">연동 테스트</button>
+            <button onclick="saveGoogleSheetUrl()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 shadow-md shadow-emerald-600/20 active:scale-95 transition cursor-pointer">URL 저장</button>
+            <button onclick="testGoogleSheetSync()" class="px-3 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200 active:scale-95 transition cursor-pointer">연동 테스트</button>
           </div>
           <!-- 💡 기기간 대출/카드/설정 백업 전송 버튼 -->
-          <button onclick="syncPushConfigToGoogleSheet(true)" class="w-full py-2.5 rounded-xl bg-indigo-50 text-indigo-700 font-bold text-xs hover:bg-indigo-100 active:scale-95 transition">
+          <button onclick="syncPushConfigToGoogleSheet(true)" class="w-full py-2.5 rounded-xl bg-indigo-50 text-indigo-700 font-bold text-xs hover:bg-indigo-100 active:scale-95 transition cursor-pointer">
             ☁️ 현재 기기의 대출/카드 설정을 구글 시트로 백업 전송
           </button>
         </div>
@@ -705,14 +706,14 @@
       <div id="recurringSheetContent" class="modal-sheet closed w-full max-w-md mx-auto bg-white rounded-t-3xl p-5 max-h-[90vh] overflow-y-auto no-scrollbar shadow-2xl space-y-4">
         <div class="flex items-center justify-between pb-2 border-b border-slate-100">
           <h3 class="font-extrabold text-base text-slate-800">매달 고정지출 템플릿</h3>
-          <button onclick="closeRecurringModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100">
+          <button onclick="closeRecurringModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 cursor-pointer">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
         <p class="text-xs text-slate-500">등록해두면 매월 결제일에 자동으로 가계부에 기록되며, 상단 의무 지출 예상액에 자동 합산됩니다.</p>
         <div id="recurringItemList" class="space-y-2"></div>
         <div class="pt-2 flex space-x-2">
-          <button onclick="applyRecurringToCurrentMonth()" class="flex-1 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20 active:scale-95 transition">
+          <button onclick="applyRecurringToCurrentMonth()" class="flex-1 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20 active:scale-95 transition cursor-pointer">
             이번 달 즉시 일괄 적용
           </button>
         </div>
@@ -726,7 +727,7 @@
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="block text-[10px] font-bold text-slate-500 mb-1">연도</label>
-            <select id="pickerSelectYear" class="w-full px-2 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-800">
+            <select id="pickerSelectYear" class="w-full px-2 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 cursor-pointer">
               <option value="2025">2025년</option>
               <option value="2026" selected>2026년</option>
               <option value="2027">2027년</option>
@@ -734,12 +735,12 @@
           </div>
           <div>
             <label class="block text-[10px] font-bold text-slate-500 mb-1">월</label>
-            <select id="pickerSelectMonth" class="w-full px-2 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-800"></select>
+            <select id="pickerSelectMonth" class="w-full px-2 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 cursor-pointer"></select>
           </div>
         </div>
         <div class="grid grid-cols-2 gap-2 pt-2">
-          <button onclick="closeMonthPickerModal()" class="py-2.5 rounded-xl bg-slate-100 text-xs font-bold text-slate-600 hover:bg-slate-200">취소</button>
-          <button onclick="applyPickedMonth()" class="py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700">이동하기</button>
+          <button onclick="closeMonthPickerModal()" class="py-2.5 rounded-xl bg-slate-100 text-xs font-bold text-slate-600 hover:bg-slate-200 cursor-pointer">취소</button>
+          <button onclick="applyPickedMonth()" class="py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 cursor-pointer">이동하기</button>
         </div>
       </div>
     </div>
@@ -752,13 +753,13 @@
             <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
             <h4 class="text-sm font-extrabold text-slate-800">가계부 전체 관리 & 설정</h4>
           </div>
-          <button onclick="closeAppSettingsHubModal()" class="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100">
+          <button onclick="closeAppSettingsHubModal()" class="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 cursor-pointer">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
         
         <div class="space-y-2 pt-1">
-          <button onclick="closeAppSettingsHubModal(); openCardSettingsModal();" class="w-full p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200/80 flex items-center justify-between transition text-left active:scale-[0.98]">
+          <button onclick="closeAppSettingsHubModal(); openCardSettingsModal();" class="w-full p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200/80 flex items-center justify-between transition text-left active:scale-[0.98] cursor-pointer">
             <div class="flex items-center space-x-2.5">
               <span class="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center flex-shrink-0">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
@@ -771,7 +772,7 @@
             <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
           </button>
 
-          <button onclick="closeAppSettingsHubModal(); openRecurringModal();" class="w-full p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200/80 flex items-center justify-between transition text-left active:scale-[0.98]">
+          <button onclick="closeAppSettingsHubModal(); openRecurringModal();" class="w-full p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200/80 flex items-center justify-between transition text-left active:scale-[0.98] cursor-pointer">
             <div class="flex items-center space-x-2.5">
               <span class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center flex-shrink-0">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
@@ -784,7 +785,7 @@
             <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
           </button>
 
-          <button onclick="closeAppSettingsHubModal(); openGoogleSheetModal();" class="w-full p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200/80 flex items-center justify-between transition text-left active:scale-[0.98]">
+          <button onclick="closeAppSettingsHubModal(); openGoogleSheetModal();" class="w-full p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200/80 flex items-center justify-between transition text-left active:scale-[0.98] cursor-pointer">
             <div class="flex items-center space-x-2.5">
               <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -797,7 +798,7 @@
             <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
           </button>
 
-          <button onclick="closeAppSettingsHubModal(); lockAppManually();" class="w-full p-3 rounded-2xl bg-rose-50/70 hover:bg-rose-100/70 border border-rose-200/80 flex items-center justify-between transition text-left active:scale-[0.98]">
+          <button onclick="closeAppSettingsHubModal(); lockAppManually();" class="w-full p-3 rounded-2xl bg-rose-50/70 hover:bg-rose-100/70 border border-rose-200/80 flex items-center justify-between transition text-left active:scale-[0.98] cursor-pointer">
             <div class="flex items-center space-x-2.5">
               <span class="w-8 h-8 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center flex-shrink-0">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
@@ -991,7 +992,6 @@
 
     let transactions = [];
     let loans = [];
-    // 💡 테스트용 예시(넷플릭스, 통신비) 완전 제거: 빈 배열로 시작
     let recurringTemplates = [];
     let googleSheetWebhookUrl = DEFAULT_WEBHOOK_URL;
     let currentExpensePaymentType = 'onetime';
@@ -1000,7 +1000,6 @@
     let pendingConfirmAction = null;
     let isSyncing = false;
 
-    // [버그 방지 1] 월말(31일 등) 결제 시 할부 날짜가 달을 건너뛰는(2/31 ➔ 3/3) 롤오버 버그 완벽 차단
     function addMonthsSafely(year, monthIndex, day, addCount) {
       const totalMonths = monthIndex + addCount;
       const targetYear = year + Math.floor(totalMonths / 12);
@@ -1011,7 +1010,7 @@
     }
 
     /* =========================================================
-       2. PIN SECURITY LOCK ENGINE
+       2. PIN SECURITY LOCK ENGINE (Supports Touch & Physical Keyboard)
        ========================================================= */
     function pressPinKey(num) {
       if (enteredPin.length >= 4) return;
@@ -1063,7 +1062,6 @@
           lockScreen.classList.add('hidden');
         }, 320);
         showToast('잠금이 해제되었습니다.');
-        // 잠금 해제 시 구글 시트에서 최신 데이터 자동 가져오기
         syncPullFromGoogleSheet(false);
       } else {
         playTapSound('A3');
@@ -1091,6 +1089,23 @@
       }, 10);
     }
 
+    // 💡 노트북/데스크탑 실물 키보드(숫자, Backspace, Esc) 이벤트 리스너
+    window.addEventListener('keydown', (e) => {
+      const lockScreen = document.getElementById('lockScreen');
+      if (lockScreen && !lockScreen.classList.contains('hidden') && !isAppUnlocked) {
+        if (e.key >= '0' && e.key <= '9') {
+          e.preventDefault();
+          pressPinKey(e.key);
+        } else if (e.key === 'Backspace') {
+          e.preventDefault();
+          deletePinLast();
+        } else if (e.key === 'Escape' || e.key === 'Delete') {
+          e.preventDefault();
+          resetPinInput();
+        }
+      }
+    });
+
     /* =========================================================
        3. STORAGE & TWO-WAY SYNC
        ========================================================= */
@@ -1102,7 +1117,6 @@
         const savedTxs = safeStorage.get('my_transactions_v4');
         if (savedTxs) {
           const parsedTxs = JSON.parse(savedTxs);
-          // 💡 과거 테스트 예시(넷플릭스, 통신비) 브라우저 저장소에서 영구 삭제
           transactions = Array.isArray(parsedTxs) 
             ? parsedTxs.filter(t => !t.merchant.includes('넷플릭스') && !t.merchant.includes('통신비')) 
             : [];
@@ -1115,7 +1129,6 @@
         const savedRec = safeStorage.get('my_recurring_v4');
         if (savedRec) {
           const parsedRec = JSON.parse(savedRec);
-          // 💡 과거 테스트 고정지출 템플릿(넷플릭스, 통신비) 브라우저 저장소에서 영구 삭제
           recurringTemplates = Array.isArray(parsedRec) 
             ? parsedRec.filter(r => !r.name.includes('넷플릭스') && !r.name.includes('통신비')) 
             : [];
@@ -1146,7 +1159,6 @@
       syncPushConfigToGoogleSheet();
     }
 
-    // 1. 구글 시트에서 최신 데이터(지출, 대출, 카드, 고정비) 읽어오기 (Pull)
     async function syncPullFromGoogleSheet(isManual = false) {
       if (!googleSheetWebhookUrl) return;
       if (isSyncing) return;
@@ -1167,7 +1179,6 @@
         const data = await response.json();
 
         if (data && data.status === "SUCCESS") {
-          // A. 지출 내역 동기화
           if (Array.isArray(data.transactions)) {
             transactions = data.transactions.map(item => {
               const matchedCat = CATEGORIES.find(c => c.id === item.category || c.name === item.category || c.name === item.categoryName);
@@ -1184,19 +1195,16 @@
             saveTransactions();
           }
 
-          // B. 대출 정보 동기화
           if (Array.isArray(data.loans) && data.loans.length > 0) {
             loans = data.loans;
             safeStorage.set('my_loans_v4', JSON.stringify(loans));
           }
 
-          // C. 카드 정보 동기화
           if (Array.isArray(data.cards) && data.cards.length > 0) {
             cards = data.cards;
             safeStorage.set('my_cards_v4', JSON.stringify(cards));
           }
 
-          // D. 고정지출 템플릿 동기화 (예시 넷플릭스/통신비 제외)
           if (Array.isArray(data.recurring)) {
             recurringTemplates = data.recurring.filter(r => r.name !== '넷플릭스 구독' && r.name !== '통신비 요금');
             safeStorage.set('my_recurring_v4', JSON.stringify(recurringTemplates));
@@ -1216,7 +1224,6 @@
       }
     }
 
-    // 2. 대출, 카드, 고정지출 설정을 구글 시트로 백업 전송 (Push)
     function syncPushConfigToGoogleSheet(showToastAlert = false) {
       if (!googleSheetWebhookUrl) return;
       try {
@@ -1239,7 +1246,6 @@
       }
     }
 
-    // 3. 단일 지출 추가 전송
     function syncAddGoogleSheet(item) {
       if (!googleSheetWebhookUrl) return;
       try {
@@ -1257,7 +1263,6 @@
       }
     }
 
-    // 4. 단일 지출 삭제 전송
     function syncDeleteGoogleSheet(item) {
       if (!googleSheetWebhookUrl || !item) return;
       try {
@@ -1359,7 +1364,6 @@
       return transactions.filter(t => t.date && t.date.startsWith(monthPrefix));
     }
 
-    // [버그 방지 3] 시트에서 동기화된 내역(cardId 누락 시)도 카드명으로 역추적하여 청구액 누락 방지
     function calculateCardBilledAmount(cardId, startDateStr, endDateStr) {
       if (!startDateStr || !endDateStr) return 0;
       const targetCard = cards.find(c => c.id === cardId);
@@ -1532,17 +1536,17 @@
     function renderFilterChips() {
       const container = document.getElementById('filterChipBar');
       let chipsHtml = `
-        <button onclick="setFilter('all')" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition ${currentFilter === 'all' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">전체 보기</button>
-        <button onclick="setFilter('fixed')" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition ${currentFilter === 'fixed' ? 'bg-indigo-600 text-white' : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100'}">고정지출</button>
-        <button onclick="setFilter('installment')" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition ${currentFilter === 'installment' ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-700 hover:bg-blue-100'}">할부</button>
-        <button onclick="setFilter('loan')" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition ${currentFilter === 'loan' ? 'bg-rose-600 text-white' : 'bg-rose-50 text-rose-700 hover:bg-rose-100'}">대출상환(계좌)</button>
+        <button onclick="setFilter('all')" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${currentFilter === 'all' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">전체 보기</button>
+        <button onclick="setFilter('fixed')" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${currentFilter === 'fixed' ? 'bg-indigo-600 text-white' : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100'}">고정지출</button>
+        <button onclick="setFilter('installment')" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${currentFilter === 'installment' ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-700 hover:bg-blue-100'}">할부</button>
+        <button onclick="setFilter('loan')" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${currentFilter === 'loan' ? 'bg-rose-600 text-white' : 'bg-rose-50 text-rose-700 hover:bg-rose-100'}">대출상환(계좌)</button>
       `;
 
       cards.forEach(c => {
         const cTheme = CARD_COLOR_PRESETS.find(p => p.id === c.colorTheme) || CARD_COLOR_PRESETS[0];
         const isSelected = currentFilter === c.id;
         chipsHtml += `
-          <button onclick="setFilter('${c.id}')" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 ${isSelected ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}">
+          <button onclick="setFilter('${c.id}')" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 cursor-pointer ${isSelected ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}">
             <span class="w-2 h-2 rounded-full bg-gradient-to-r ${cTheme.class}"></span>
             <span>${escapeHtml(c.name)}</span>
           </button>
@@ -1648,7 +1652,7 @@
 
             <div class="flex items-center space-x-2 flex-shrink-0 ml-2">
               <span class="font-extrabold text-sm ${cat.isRedTheme ? 'text-red-600' : 'text-slate-900'} tracking-tight">-${Number(item.amount).toLocaleString('ko-KR')}원</span>
-              <button onclick="promptDeleteTransaction('${item.id}')" title="삭제" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-white/80 transition active:scale-90">
+              <button onclick="promptDeleteTransaction('${item.id}')" title="삭제" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-white/80 transition active:scale-90 cursor-pointer">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
               </button>
             </div>
@@ -1814,9 +1818,8 @@
                 </div>
               </div>
 
-              <!-- [버그 방지 4] data-account 속성을 통한 따옴표 이스케이프 버그 원천 차단 -->
               <div class="pt-1.5 border-t border-rose-100 flex items-center justify-between">
-                <button type="button" data-account="${escapeHtml(accText)}" onclick="handleCopyAccountClick(this, event)" class="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-300 active:scale-[0.98] transition shadow-2xs group">
+                <button type="button" data-account="${escapeHtml(accText)}" onclick="handleCopyAccountClick(this, event)" class="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-300 active:scale-[0.98] transition shadow-2xs group cursor-pointer">
                   <div class="flex items-center space-x-2 overflow-hidden">
                     <svg class="w-4 h-4 text-rose-500 flex-shrink-0 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                     <span class="text-xs font-mono font-black truncate">${escapeHtml(accText)}</span>
@@ -1846,7 +1849,7 @@
             </div>
             <div class="flex items-center space-x-2">
               <span class="font-bold text-slate-900">-${Number(t.amount).toLocaleString('ko-KR')}원</span>
-              <button onclick="promptDeleteTransaction('${t.id}')" class="text-slate-300 hover:text-rose-500">
+              <button onclick="promptDeleteTransaction('${t.id}')" class="text-slate-300 hover:text-rose-500 cursor-pointer">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
               </button>
             </div>
@@ -1866,7 +1869,7 @@
         container.innerHTML = `
           <div class="py-10 text-center text-slate-400 space-y-2 bg-slate-50 rounded-2xl border border-dashed border-slate-200 p-4">
             <p class="text-xs font-semibold">등록된 대출 내역이 없습니다.</p>
-            <button onclick="openLoanModal()" class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-600/20 active:scale-95 transition">
+            <button onclick="openLoanModal()" class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-600/20 active:scale-95 transition cursor-pointer">
               첫 대출 등록하기
             </button>
           </div>
@@ -1925,7 +1928,6 @@
         const accountDisplay = loan.account || (loan.bank + ' 계좌');
 
         let periodDdayBox = '';
-        // [버그 방지 5] 날짜 문자열이 손상되었을 때 발생하던 NaN 표시 방지
         if (loan.endDate && /^\d{4}-\d{2}-\d{2}$/.test(loan.endDate)) {
           const today = new Date();
           today.setHours(0, 0, 0, 0);
@@ -1989,7 +1991,7 @@
               </div>
 
               <!-- 원터치 복사 버튼 (안전한 data-account 방식) -->
-              <button type="button" data-account="${escapeHtml(accountDisplay)}" onclick="handleCopyAccountClick(this, event)" class="w-full flex items-center justify-between bg-white hover:bg-rose-100/50 active:scale-[0.98] border border-rose-300 px-3 py-2.5 rounded-xl transition shadow-2xs group" title="터치하여 계좌번호 복사">
+              <button type="button" data-account="${escapeHtml(accountDisplay)}" onclick="handleCopyAccountClick(this, event)" class="w-full flex items-center justify-between bg-white hover:bg-rose-100/50 active:scale-[0.98] border border-rose-300 px-3 py-2.5 rounded-xl transition shadow-2xs group cursor-pointer" title="터치하여 계좌번호 복사">
                 <div class="flex items-center space-x-2 overflow-hidden">
                   <svg class="w-4 h-4 text-rose-500 flex-shrink-0 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                   <span class="font-mono font-black text-xs text-slate-900 group-hover:text-rose-700 tracking-tight">${escapeHtml(accountDisplay)}</span>
@@ -2027,13 +2029,13 @@
 
             <!-- Action Buttons -->
             <div class="flex space-x-2 pt-1 border-t border-slate-100">
-              <button onclick="openLoanRepayModal('${loan.id}')" class="flex-1 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs transition">
+              <button onclick="openLoanRepayModal('${loan.id}')" class="flex-1 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs transition cursor-pointer">
                 계좌 상환 기록 & 잔액 차감
               </button>
-              <button onclick="editLoanDirect('${loan.id}')" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-600 font-bold text-xs hover:bg-slate-200 transition">
+              <button onclick="editLoanDirect('${loan.id}')" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-600 font-bold text-xs hover:bg-slate-200 transition cursor-pointer">
                 수정
               </button>
-              <button onclick="deleteLoan('${loan.id}')" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-300 hover:text-rose-600 hover:bg-rose-50 transition">
+              <button onclick="deleteLoan('${loan.id}')" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-300 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
               </button>
             </div>
@@ -2205,14 +2207,14 @@
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="block text-[11px] font-bold text-slate-600 mb-1">매월 결제일</label>
-                <select id="cardPayDaySelect_${c.id}" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-800">
+                <select id="cardPayDaySelect_${c.id}" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 cursor-pointer">
                   ${Array.from({ length: 31 }, (_, i) => `<option value="${i + 1}" ${Number(c.payDay || 14) === (i + 1) ? 'selected' : ''}>매월 ${i + 1}일</option>`).join('')}
                 </select>
               </div>
 
               <div>
                 <label class="block text-[11px] font-bold text-slate-600 mb-1">이용 기간(산정) 기준</label>
-                <select id="cardCycleTypeSelect_${c.id}" onchange="toggleCardCustomCycle('${c.id}')" class="w-full px-2.5 py-2 rounded-xl border border-slate-200 text-[11px] font-bold text-slate-800">
+                <select id="cardCycleTypeSelect_${c.id}" onchange="toggleCardCustomCycle('${c.id}')" class="w-full px-2.5 py-2 rounded-xl border border-slate-200 text-[11px] font-bold text-slate-800 cursor-pointer">
                   <option value="prev_month_full" ${c.cycleType === 'prev_month_full' ? 'selected' : ''}>전월 1일 ~ 말일 (14일결제 표준)</option>
                   <option value="custom_cycle" ${c.cycleType === 'custom_cycle' ? 'selected' : ''}>전월 N일 ~ 당월 M일 (직접지정)</option>
                   <option value="curr_month_full" ${c.cycleType === 'curr_month_full' ? 'selected' : ''}>당월 1일 ~ 말일</option>
@@ -2321,13 +2323,13 @@
       const box = document.getElementById('installmentConfigBox');
 
       if (type === 'installment') {
-        btnInst.className = 'px-3 py-1 rounded-lg bg-white text-indigo-600 shadow-sm transition';
-        btnOne.className = 'px-3 py-1 rounded-lg text-slate-600 transition';
+        btnInst.className = 'px-3 py-1 rounded-lg bg-white text-indigo-600 shadow-sm transition cursor-pointer';
+        btnOne.className = 'px-3 py-1 rounded-lg text-slate-600 transition cursor-pointer';
         box.classList.remove('hidden');
         calculateInstallmentPreview();
       } else {
-        btnOne.className = 'px-3 py-1 rounded-lg bg-white text-indigo-600 shadow-sm transition';
-        btnInst.className = 'px-3 py-1 rounded-lg text-slate-600 transition';
+        btnOne.className = 'px-3 py-1 rounded-lg bg-white text-indigo-600 shadow-sm transition cursor-pointer';
+        btnInst.className = 'px-3 py-1 rounded-lg text-slate-600 transition cursor-pointer';
         box.classList.add('hidden');
       }
     }
@@ -2369,7 +2371,7 @@
         const cTheme = CARD_COLOR_PRESETS.find(p => p.id === c.colorTheme) || CARD_COLOR_PRESETS[0];
         const isSelected = selectedExpenseCardId === c.id;
         return `
-          <button type="button" onclick="selectExpenseCard('${c.id}')" class="p-2.5 rounded-xl border text-left transition flex items-center justify-between ${isSelected ? 'border-indigo-600 bg-indigo-50/50 ring-1 ring-indigo-500' : 'border-slate-200 hover:bg-slate-50'}">
+          <button type="button" onclick="selectExpenseCard('${c.id}')" class="p-2.5 rounded-xl border text-left transition flex items-center justify-between cursor-pointer ${isSelected ? 'border-indigo-600 bg-indigo-50/50 ring-1 ring-indigo-500' : 'border-slate-200 hover:bg-slate-50'}">
             <div class="flex items-center space-x-2 truncate">
               <span class="w-3 h-3 rounded-full bg-gradient-to-r ${cTheme.class}"></span>
               <span class="text-xs font-bold text-slate-800 truncate">${escapeHtml(c.name)}</span>
@@ -2398,7 +2400,7 @@
         }
 
         return `
-          <button type="button" onclick="selectExpenseCategory('${cat.id}')" class="py-2.5 px-1 rounded-2xl flex flex-col items-center justify-center transition border ${buttonStyle}">
+          <button type="button" onclick="selectExpenseCategory('${cat.id}')" class="py-2.5 px-1 rounded-2xl flex flex-col items-center justify-center transition border cursor-pointer ${buttonStyle}">
             <span class="text-xl mb-0.5">${cat.icon}</span>
             <span class="text-[11px] font-extrabold">${cat.name}</span>
           </button>
@@ -2592,7 +2594,7 @@
       const fabLabel = document.getElementById('fabButtonLabel');
 
       [btnTx, btnCal, btnLoans].forEach(btn => {
-        btn.className = 'py-2 text-xs font-bold rounded-xl transition flex flex-col items-center justify-center text-slate-500 hover:bg-slate-50';
+        btn.className = 'py-2 text-xs font-bold rounded-xl transition flex flex-col items-center justify-center text-slate-500 hover:bg-slate-50 cursor-pointer';
       });
 
       viewTx.classList.add('hidden');
@@ -2600,16 +2602,16 @@
       viewLoans.classList.add('hidden');
 
       if (tab === 'transactions') {
-        btnTx.className = 'py-2 text-xs font-bold rounded-xl transition flex flex-col items-center justify-center bg-indigo-50 text-indigo-600';
+        btnTx.className = 'py-2 text-xs font-bold rounded-xl transition flex flex-col items-center justify-center bg-indigo-50 text-indigo-600 cursor-pointer';
         viewTx.classList.remove('hidden');
         fabLabel.textContent = '새 지출 기록하기';
       } else if (tab === 'calendar') {
-        btnCal.className = 'py-2 text-xs font-bold rounded-xl transition flex flex-col items-center justify-center bg-indigo-50 text-indigo-600';
+        btnCal.className = 'py-2 text-xs font-bold rounded-xl transition flex flex-col items-center justify-center bg-indigo-50 text-indigo-600 cursor-pointer';
         viewCal.classList.remove('hidden');
         fabLabel.textContent = '선택 일자에 지출 기록';
         renderCalendar();
       } else if (tab === 'loans') {
-        btnLoans.className = 'py-2 text-xs font-bold rounded-xl transition flex flex-col items-center justify-center bg-indigo-50 text-indigo-600';
+        btnLoans.className = 'py-2 text-xs font-bold rounded-xl transition flex flex-col items-center justify-center bg-indigo-50 text-indigo-600 cursor-pointer';
         viewLoans.classList.remove('hidden');
         fabLabel.textContent = '+ 새 대출 등록하기';
         renderLoanView();
@@ -2708,7 +2710,7 @@
               </div>
               <div class="flex items-center space-x-2">
                 <span class="text-xs font-black text-indigo-600">${Number(r.amount).toLocaleString('ko-KR')}원</span>
-                <button onclick="deleteRecurringTemplate('${r.id}')" class="text-slate-300 hover:text-rose-500">
+                <button onclick="deleteRecurringTemplate('${r.id}')" class="text-slate-300 hover:text-rose-500 cursor-pointer">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                 </button>
               </div>
@@ -2783,7 +2785,6 @@
       const selectMonth = document.getElementById('pickerSelectMonth');
       selectMonth.innerHTML = Array.from({ length: 12 }, (_, i) => `<option value="${i + 1}" ${i + 1 === currentMonth ? 'selected' : ''}>${i + 1}월</option>`).join('');
       
-      // [버그 방지 6] 연도가 고정되어 있던 문제를 해결하여 현재 연도 기준 ±2년 동적 생성
       const selectYear = document.getElementById('pickerSelectYear');
       const nowY = new Date().getFullYear();
       selectYear.innerHTML = [nowY - 2, nowY - 1, nowY, nowY + 1, nowY + 2].map(y => `<option value="${y}" ${y === currentYear ? 'selected' : ''}>${y}년</option>`).join('');
