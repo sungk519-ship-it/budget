@@ -190,19 +190,23 @@
             <span id="statTotalActualExpense" class="text-lg font-black text-emerald-300">0원</span>
           </div>
 
-          <!-- 3-Way Sub Breakdown -->
-          <div class="grid grid-cols-3 gap-2 text-center text-xs">
+          <!-- 4-Way Breakdown (변동/현금/고정/대출) -->
+          <div class="grid grid-cols-4 gap-1.5 text-center text-xs">
             <div class="bg-white/5 rounded-xl py-2 px-1">
-              <span class="block text-[10px] text-slate-400 mb-0.5">변동 지출</span>
-              <span id="statVariableExpense" class="font-bold text-white">0원</span>
+              <span class="block text-[10px] text-slate-400 mb-0.5">카드 변동</span>
+              <span id="statCardExpense" class="font-bold text-white text-[11px]">0원</span>
+            </div>
+            <div class="bg-emerald-500/15 border border-emerald-500/30 rounded-xl py-2 px-1">
+              <span class="block text-[10px] text-emerald-300 mb-0.5 font-bold">💵 현금/이체</span>
+              <span id="statCashExpense" class="font-black text-emerald-400 text-[11px]">0원</span>
             </div>
             <div class="bg-white/5 rounded-xl py-2 px-1">
               <span class="block text-[10px] text-slate-400 mb-0.5">고정 지출</span>
-              <span id="statFixedExpense" class="font-bold text-amber-300">0원</span>
+              <span id="statFixedExpense" class="font-bold text-amber-300 text-[11px]">0원</span>
             </div>
             <div class="bg-white/5 rounded-xl py-2 px-1">
               <span class="block text-[10px] text-slate-400 mb-0.5">대출 상환</span>
-              <span id="statLoanExpense" class="font-bold text-rose-300">0원</span>
+              <span id="statLoanExpense" class="font-bold text-rose-300 text-[11px]">0원</span>
             </div>
           </div>
         </div>
@@ -427,7 +431,10 @@
           <!-- Payment Mode: One-time vs Installment -->
           <div class="p-3 bg-slate-50 rounded-2xl space-y-2 border border-slate-200/60">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-slate-700">결제 방식</span>
+              <div>
+                <span class="text-xs font-bold text-slate-700">결제 방식</span>
+                <span id="cashModeNotice" class="hidden text-[10px] text-emerald-600 font-bold ml-1.5">(현금/이체는 즉시 출금)</span>
+              </div>
               <div class="flex bg-slate-200 p-0.5 rounded-xl text-xs font-bold">
                 <button type="button" id="btnModeOnetime" onclick="setPaymentType('onetime')" class="px-3 py-1 rounded-lg bg-white text-indigo-600 shadow-sm transition cursor-pointer">일시불</button>
                 <button type="button" id="btnModeInstallment" onclick="setPaymentType('installment')" class="px-3 py-1 rounded-lg text-slate-600 transition cursor-pointer">할부</button>
@@ -454,31 +461,34 @@
             </div>
           </div>
 
-          <!-- Credit Card Selector -->
+          <!-- Payment Method Selector: Cards + Cash -->
           <div>
-            <label class="block text-xs font-bold text-slate-600 mb-1">결제할 신용카드</label>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="block text-xs font-bold text-slate-700">결제 수단 (신용카드 & 현금/이체)</label>
+              <span class="text-[10px] text-slate-400 font-medium">💵 현금은 카드 청구에 포함되지 않음</span>
+            </div>
             <div id="modalCardButtonGrid" class="grid grid-cols-2 gap-2"></div>
           </div>
 
-          <!-- Category Selector -->
+          <!-- Category Selector (12 Categories 3x4 Grid) -->
           <div>
             <div class="flex items-center justify-between mb-1">
               <label class="block text-xs font-bold text-slate-600">카테고리</label>
-              <span class="text-[10px] text-red-500 font-extrabold">🏪 편의점 (빨간색 고유 테마)</span>
+              <span class="text-[10px] text-red-500 font-extrabold">🏪 편의점 (레드 고유) · 💌 경조사/회비</span>
             </div>
             <div id="categoryGrid" class="grid grid-cols-3 gap-2"></div>
           </div>
 
-          <!-- Merchant -->
+          <!-- Merchant / Usage -->
           <div>
             <label class="block text-xs font-bold text-slate-600 mb-1">사용처 (가맹점명 또는 내용)</label>
-            <input type="text" id="inputExpMerchant" placeholder="예: 스타벅스 강남점, 이마트 장보기" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <input type="text" id="inputExpMerchant" placeholder="예: 10월 곗돈 송금, 친구 결혼식 축의금, 스타벅스" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
           </div>
 
           <!-- Fixed Expense Check & Recurring Auto Option -->
           <div class="p-3 bg-indigo-50/70 border border-indigo-100 rounded-2xl space-y-2">
             <div class="flex items-center justify-between">
-              <label for="checkIsFixed" class="text-xs font-bold text-slate-700 cursor-pointer">매달 나가는 고정지출</label>
+              <label for="checkIsFixed" class="text-xs font-bold text-slate-700 cursor-pointer">매달 나가는 고정지출 (월세, 곗돈 등)</label>
               <input type="checkbox" id="checkIsFixed" onchange="toggleFixedSubOption()" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer">
             </div>
             <div id="fixedAutoSubOption" class="hidden pt-1.5 border-t border-indigo-200/50 flex items-center justify-between">
@@ -695,7 +705,7 @@
             <button onclick="saveGoogleSheetUrl()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 shadow-md shadow-emerald-600/20 active:scale-95 transition cursor-pointer">URL 저장</button>
             <button onclick="testGoogleSheetSync()" class="px-3 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200 active:scale-95 transition cursor-pointer">연동 테스트</button>
           </div>
-          <!-- 💡 기기간 대출/카드/설정 백업 전송 버튼 -->
+          <!-- 기기간 대출/카드/설정 백업 전송 버튼 -->
           <button onclick="syncPushConfigToGoogleSheet(true)" class="w-full py-2.5 rounded-xl bg-indigo-50 text-indigo-700 font-bold text-xs hover:bg-indigo-100 active:scale-95 transition cursor-pointer">
             ☁️ 현재 기기의 대출/카드 설정을 구글 시트로 백업 전송
           </button>
@@ -778,7 +788,7 @@
               </span>
               <div>
                 <span class="text-xs font-extrabold text-slate-800 block">매달 고정지출 템플릿</span>
-                <span class="text-[10px] text-slate-400 block">구독, 통신비, 관리비 등록</span>
+                <span class="text-[10px] text-slate-400 block">구독, 통신비, 곗돈, 회비 등 관리</span>
               </div>
             </div>
             <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
@@ -891,6 +901,7 @@
       }
     };
 
+    // 12 카테고리 (3x4 그리드 균형 배치 + 곗돈/경조사비 전용 카테고리 포함)
     const CATEGORIES = [
       { 
         id: 'convenience', 
@@ -905,7 +916,7 @@
       { 
         id: 'food', 
         name: '식비', 
-        icon: '🍽️', 
+        icon: '🍽️️', 
         iconBg: 'bg-orange-100 text-orange-600', 
         cardStyle: 'bg-orange-50/70 border-orange-200/90 border-l-4 border-l-orange-400 text-orange-950',
         badgeClass: 'bg-orange-100 text-orange-700',
@@ -930,8 +941,17 @@
         activeBtn: 'bg-pink-500 text-white border-pink-500 ring-2 ring-pink-300'
       },
       { 
+        id: 'event', 
+        name: '경조사/회비', 
+        icon: '💌', 
+        iconBg: 'bg-rose-100 text-rose-600', 
+        cardStyle: 'bg-rose-50/80 border-rose-200/90 border-l-4 border-l-rose-400 text-rose-950',
+        badgeClass: 'bg-rose-100 text-rose-700 font-bold',
+        activeBtn: 'bg-rose-600 text-white border-rose-600 ring-2 ring-rose-300'
+      },
+      { 
         id: 'living', 
-        name: '생활/공과금', 
+        name: '주거/공과금', 
         icon: '🏠', 
         iconBg: 'bg-emerald-100 text-emerald-700', 
         cardStyle: 'bg-emerald-50/70 border-emerald-200/90 border-l-4 border-l-emerald-400 text-emerald-950',
@@ -966,6 +986,24 @@
         activeBtn: 'bg-teal-600 text-white border-teal-600 ring-2 ring-teal-300'
       },
       { 
+        id: 'beauty', 
+        name: '뷰티/미용', 
+        icon: '✂️', 
+        iconBg: 'bg-fuchsia-100 text-fuchsia-600', 
+        cardStyle: 'bg-fuchsia-50/70 border-fuchsia-200/90 border-l-4 border-l-fuchsia-400 text-fuchsia-950',
+        badgeClass: 'bg-fuchsia-100 text-fuchsia-700',
+        activeBtn: 'bg-fuchsia-600 text-white border-fuchsia-600 ring-2 ring-fuchsia-300'
+      },
+      { 
+        id: 'education', 
+        name: '교육/자기계발', 
+        icon: '📚', 
+        iconBg: 'bg-indigo-100 text-indigo-600', 
+        cardStyle: 'bg-indigo-50/70 border-indigo-200/90 border-l-4 border-l-indigo-400 text-indigo-950',
+        badgeClass: 'bg-indigo-100 text-indigo-700',
+        activeBtn: 'bg-indigo-600 text-white border-indigo-600 ring-2 ring-indigo-300'
+      },
+      { 
         id: 'etc', 
         name: '기타/이체', 
         icon: '💡', 
@@ -994,7 +1032,7 @@
     let recurringTemplates = [];
     let googleSheetWebhookUrl = DEFAULT_WEBHOOK_URL;
     let currentExpensePaymentType = 'onetime';
-    let selectedExpenseCardId = 'card_samsung';
+    let selectedExpenseCardId = 'card_samsung'; // 'cash' or card id
     let selectedExpenseCategory = 'food';
     let pendingConfirmAction = null;
     let isSyncing = false;
@@ -1088,7 +1126,7 @@
       }, 10);
     }
 
-    // 💡 노트북/데스크탑 실물 키보드(숫자, Backspace, Esc) 이벤트 리스너
+    // 노트북/데스크탑 실물 키보드(숫자, Backspace, Esc) 이벤트 리스너
     window.addEventListener('keydown', (e) => {
       const lockScreen = document.getElementById('lockScreen');
       if (lockScreen && !lockScreen.classList.contains('hidden') && !isAppUnlocked) {
@@ -1181,14 +1219,17 @@
           if (Array.isArray(data.transactions)) {
             transactions = data.transactions.map(item => {
               const matchedCat = CATEGORIES.find(c => c.id === item.category || c.name === item.category || c.name === item.categoryName);
-              const matchedCard = cards.find(c => c.id === item.cardId || c.name === item.cardName);
+              const isCashTx = (item.cardId === 'cash') || (item.cardName && (item.cardName.includes('현금') || item.cardName.includes('이체')));
+              const matchedCard = isCashTx ? null : cards.find(c => c.id === item.cardId || c.name === item.cardName);
+
               return {
                 ...item,
                 amount: Number(item.amount) || 0,
                 category: matchedCat ? matchedCat.id : (item.category || 'etc'),
                 categoryName: matchedCat ? matchedCat.name : (item.categoryName || '기타/이체'),
-                cardId: matchedCard ? matchedCard.id : (item.cardId || ''),
-                cardName: matchedCard ? matchedCard.name : (item.cardName || '')
+                isCash: isCashTx,
+                cardId: isCashTx ? 'cash' : (matchedCard ? matchedCard.id : (item.cardId || '')),
+                cardName: isCashTx ? '현금/계좌이체' : (matchedCard ? matchedCard.name : (item.cardName || ''))
               };
             });
             saveTransactions();
@@ -1364,9 +1405,10 @@
     }
 
     function calculateCardBilledAmount(cardId, startDateStr, endDateStr) {
-      if (!startDateStr || !endDateStr) return 0;
+      if (!startDateStr || !endDateStr || cardId === 'cash') return 0;
       const targetCard = cards.find(c => c.id === cardId);
       return transactions.reduce((sum, t) => {
+        if (t.cardId === 'cash' || t.isCash) return sum;
         const isMatchedCard = (t.cardId === cardId) || (targetCard && t.cardName === targetCard.name);
         if (isMatchedCard && t.date >= startDateStr && t.date <= endDateStr) {
           return sum + (Number(t.amount) || 0);
@@ -1398,16 +1440,23 @@
       const totalExpectedMandatory = fixedTemplateSum + loanPlannedSum;
 
       let totalActual = 0;
-      let actualVariable = 0;
+      let actualCard = 0;
+      let actualCash = 0;
       let actualFixed = 0;
       let actualLoan = 0;
 
       monthTxs.forEach(t => {
         const amt = Number(t.amount) || 0;
         totalActual += amt;
-        if (t.isLoan) actualLoan += amt;
-        else if (t.isFixed) actualFixed += amt;
-        else actualVariable += amt;
+        if (t.isLoan) {
+          actualLoan += amt;
+        } else if (t.isFixed) {
+          actualFixed += amt;
+        } else if (t.cardId === 'cash' || t.isCash) {
+          actualCash += amt;
+        } else {
+          actualCard += amt;
+        }
       });
 
       const mandatoryCompleted = actualFixed + actualLoan;
@@ -1424,7 +1473,8 @@
       document.getElementById('statMandatoryPendingAmount').textContent = `출금 대기: ${mandatoryPending.toLocaleString('ko-KR')}원`;
 
       document.getElementById('statTotalActualExpense').textContent = totalActual.toLocaleString('ko-KR') + '원';
-      document.getElementById('statVariableExpense').textContent = actualVariable.toLocaleString('ko-KR') + '원';
+      document.getElementById('statCardExpense').textContent = actualCard.toLocaleString('ko-KR') + '원';
+      document.getElementById('statCashExpense').textContent = actualCash.toLocaleString('ko-KR') + '원';
       document.getElementById('statFixedExpense').textContent = actualFixed.toLocaleString('ko-KR') + '원';
       document.getElementById('statLoanExpense').textContent = actualLoan.toLocaleString('ko-KR') + '원';
 
@@ -1536,6 +1586,9 @@
       const container = document.getElementById('filterChipBar');
       let chipsHtml = `
         <button onclick="setFilter('all')" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${currentFilter === 'all' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">전체 보기</button>
+        <button onclick="setFilter('cash')" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1 cursor-pointer ${currentFilter === 'cash' ? 'bg-emerald-600 text-white' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'}">
+          <span>💵</span><span>현금/이체</span>
+        </button>
         <button onclick="setFilter('fixed')" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${currentFilter === 'fixed' ? 'bg-indigo-600 text-white' : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100'}">고정지출</button>
         <button onclick="setFilter('installment')" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${currentFilter === 'installment' ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-700 hover:bg-blue-100'}">할부</button>
         <button onclick="setFilter('loan')" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${currentFilter === 'loan' ? 'bg-rose-600 text-white' : 'bg-rose-50 text-rose-700 hover:bg-rose-100'}">대출상환(계좌)</button>
@@ -1572,7 +1625,9 @@
       const monthTxs = getMonthTransactions();
       let filtered = monthTxs;
 
-      if (currentFilter === 'fixed') {
+      if (currentFilter === 'cash') {
+        filtered = monthTxs.filter(t => t.cardId === 'cash' || t.isCash);
+      } else if (currentFilter === 'fixed') {
         filtered = monthTxs.filter(t => t.isFixed);
       } else if (currentFilter === 'installment') {
         filtered = monthTxs.filter(t => t.isInstallment);
@@ -1599,8 +1654,9 @@
       }
 
       container.innerHTML = filtered.map(item => {
-        const cat = CATEGORIES.find(c => c.id === item.category) || CATEGORIES[8];
-        const card = cards.find(c => c.id === item.cardId);
+        const cat = CATEGORIES.find(c => c.id === item.category) || CATEGORIES[11];
+        const isCash = (item.cardId === 'cash') || item.isCash;
+        const card = isCash ? null : cards.find(c => c.id === item.cardId);
         const cTheme = card ? (CARD_COLOR_PRESETS.find(p => p.id === card.colorTheme) || CARD_COLOR_PRESETS[0]) : null;
 
         let badgesHtml = '';
@@ -1618,6 +1674,8 @@
         let paymentBadge = '';
         if (item.isLoan) {
           paymentBadge = `<span class="bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded text-[10px] font-bold">🏦 ${escapeHtml(item.cardName || '계좌출금')}</span>`;
+        } else if (isCash) {
+          paymentBadge = `<span class="bg-emerald-100 text-emerald-800 border border-emerald-300 px-1.5 py-0.5 rounded text-[10px] font-extrabold flex items-center space-x-1"><span>💵</span><span>현금/이체</span></span>`;
         } else if (cTheme && card) {
           paymentBadge = `<span class="${cTheme.badgeClass} px-1.5 py-0.5 rounded text-[10px] font-bold">${escapeHtml(card.name)}</span>`;
         } else if (item.cardName) {
@@ -1848,11 +1906,15 @@
       }
 
       container.innerHTML = dayTxs.map(t => {
+        let paymentBadgeText = escapeHtml(t.cardName || '');
+        if (t.isLoan) paymentBadgeText = '🏦 ' + escapeHtml(t.cardName || '계좌출금');
+        else if (t.cardId === 'cash' || t.isCash) paymentBadgeText = '💵 현금/이체';
+
         return `
           <div class="flex items-center justify-between text-xs py-2 px-3 bg-white rounded-xl border border-slate-100 shadow-2xs">
             <div class="flex items-center space-x-1.5 truncate cursor-pointer" onclick="openEditExpenseModal('${t.id}')">
               <span class="font-extrabold text-slate-800">${escapeHtml(t.merchant)}</span>
-              <span class="text-[10px] text-slate-400 font-medium">${t.isLoan ? '🏦 ' + escapeHtml(t.cardName || '계좌출금') : escapeHtml(t.cardName || '')}</span>
+              <span class="text-[10px] text-slate-400 font-medium">${paymentBadgeText}</span>
             </div>
             <div class="flex items-center space-x-1.5">
               <span class="font-bold text-slate-900 mr-0.5">-${Number(t.amount).toLocaleString('ko-KR')}원</span>
@@ -2293,7 +2355,7 @@
     }
 
     /* =========================================================
-       10. EXPENSE ENTRY & EDIT HANDLING (⭐ 지출 내역 수정 기능)
+       10. EXPENSE ENTRY & EDIT HANDLING (신용카드 & 현금/이체 지원)
        ========================================================= */
     function openExpenseModal(presetDate = null) {
       playTapSound('C5');
@@ -2312,6 +2374,9 @@
       document.getElementById('checkAutoRecurring').checked = false;
       document.getElementById('fixedAutoSubOption').classList.add('hidden');
 
+      selectedExpenseCardId = cards[0] ? cards[0].id : 'cash';
+      selectedExpenseCategory = 'food';
+
       setPaymentType('onetime');
       renderModalCardSelector();
       renderModalCategoryGrid();
@@ -2323,7 +2388,7 @@
       }, 10);
     }
 
-    // ⭐ 기존 지출 내역 수정 팝업 열기
+    // 기존 지출 내역 수정 팝업 열기
     function openEditExpenseModal(id) {
       playTapSound('C5');
       const tx = transactions.find(t => t.id === id);
@@ -2347,7 +2412,11 @@
       if (tx.isFixed) fixedSub.classList.remove('hidden');
       else fixedSub.classList.add('hidden');
 
-      if (tx.isInstallment) {
+      const isCashTx = (tx.cardId === 'cash') || tx.isCash;
+      selectedExpenseCardId = isCashTx ? 'cash' : (tx.cardId || (cards[0] ? cards[0].id : ''));
+      selectedExpenseCategory = tx.category || 'food';
+
+      if (tx.isInstallment && !isCashTx) {
         setPaymentType('installment');
         document.getElementById('selectInstallmentMonths').value = tx.installmentMonths || 3;
         calculateInstallmentPreview();
@@ -2355,8 +2424,6 @@
         setPaymentType('onetime');
       }
 
-      selectedExpenseCardId = tx.cardId || (cards[0] ? cards[0].id : '');
-      selectedExpenseCategory = tx.category || 'food';
       renderModalCardSelector();
       renderModalCategoryGrid();
 
@@ -2376,6 +2443,11 @@
     }
 
     function setPaymentType(type) {
+      if (selectedExpenseCardId === 'cash' && type === 'installment') {
+        showToast('💵 현금/계좌이체는 일시불(즉시출금)로만 기록됩니다.');
+        return;
+      }
+
       currentExpensePaymentType = type;
       const btnOne = document.getElementById('btnModeOnetime');
       const btnInst = document.getElementById('btnModeInstallment');
@@ -2424,13 +2496,32 @@
       }
     }
 
+    // 결제 수단 선택기 (신용카드 4종 + 💵 현금/계좌이체 와이드 버튼)
     function renderModalCardSelector() {
       const container = document.getElementById('modalCardButtonGrid');
-      container.innerHTML = cards.map(c => {
+      const isCashSelected = (selectedExpenseCardId === 'cash');
+      const cashNotice = document.getElementById('cashModeNotice');
+      const btnInst = document.getElementById('btnModeInstallment');
+
+      if (isCashSelected) {
+        if (cashNotice) cashNotice.classList.remove('hidden');
+        if (btnInst) {
+          btnInst.classList.add('opacity-40', 'cursor-not-allowed');
+          btnInst.title = '현금/계좌이체는 일시불만 가능';
+        }
+      } else {
+        if (cashNotice) cashNotice.classList.add('hidden');
+        if (btnInst) {
+          btnInst.classList.remove('opacity-40', 'cursor-not-allowed');
+          btnInst.title = '';
+        }
+      }
+
+      let cardsHtml = cards.map(c => {
         const cTheme = CARD_COLOR_PRESETS.find(p => p.id === c.colorTheme) || CARD_COLOR_PRESETS[0];
         const isSelected = selectedExpenseCardId === c.id;
         return `
-          <button type="button" onclick="selectExpenseCard('${c.id}')" class="p-2.5 rounded-xl border text-left transition flex items-center justify-between cursor-pointer ${isSelected ? 'border-indigo-600 bg-indigo-50/50 ring-1 ring-indigo-500' : 'border-slate-200 hover:bg-slate-50'}">
+          <button type="button" onclick="selectExpenseCard('${c.id}')" class="p-2.5 rounded-xl border text-left transition flex items-center justify-between cursor-pointer ${isSelected ? 'border-indigo-600 bg-indigo-50/50 ring-2 ring-indigo-500' : 'border-slate-200 hover:bg-slate-50'}">
             <div class="flex items-center space-x-2 truncate">
               <span class="w-3 h-3 rounded-full bg-gradient-to-r ${cTheme.class}"></span>
               <span class="text-xs font-bold text-slate-800 truncate">${escapeHtml(c.name)}</span>
@@ -2439,11 +2530,30 @@
           </button>
         `;
       }).join('');
+
+      // 💵 현금 / 계좌이체 풀 와이드 버튼
+      const cashHtml = `
+        <button type="button" onclick="selectExpenseCard('cash')" class="col-span-2 p-2.5 rounded-xl border transition flex items-center justify-between cursor-pointer ${isCashSelected ? 'border-emerald-500 bg-emerald-50/80 ring-2 ring-emerald-400 text-emerald-950' : 'border-slate-200 bg-slate-50/60 hover:bg-emerald-50/40 text-slate-700'}">
+          <div class="flex items-center space-x-2.5">
+            <span class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm font-black flex-shrink-0">💵</span>
+            <div class="text-left">
+              <span class="text-xs font-black block">현금 / 계좌이체</span>
+              <span class="text-[10px] text-slate-400 block font-medium leading-tight">곗돈, 축의/부의금, 모임비, 현금영수증 (즉시 출금)</span>
+            </div>
+          </div>
+          ${isCashSelected ? '<span class="text-emerald-600 text-xs font-black px-2 py-0.5 rounded-md bg-emerald-100">선택됨 ✓</span>' : '<span class="text-[11px] text-slate-400">선택</span>'}
+        </button>
+      `;
+
+      container.innerHTML = cardsHtml + cashHtml;
     }
 
     function selectExpenseCard(cardId) {
       playTapSound('E5');
       selectedExpenseCardId = cardId;
+      if (cardId === 'cash') {
+        setPaymentType('onetime');
+      }
       renderModalCardSelector();
     }
 
@@ -2461,7 +2571,7 @@
         return `
           <button type="button" onclick="selectExpenseCategory('${cat.id}')" class="py-2.5 px-1 rounded-2xl flex flex-col items-center justify-center transition border cursor-pointer ${buttonStyle}">
             <span class="text-xl mb-0.5">${cat.icon}</span>
-            <span class="text-[11px] font-extrabold">${cat.name}</span>
+            <span class="text-[11px] font-extrabold truncate w-full text-center px-0.5">${cat.name}</span>
           </button>
         `;
       }).join('');
@@ -2484,10 +2594,13 @@
 
       if (!totalAmount || !merchant) return;
 
-      const card = cards.find(c => c.id === selectedExpenseCardId) || cards[0];
+      const isCash = (selectedExpenseCardId === 'cash');
+      const card = isCash ? null : (cards.find(c => c.id === selectedExpenseCardId) || cards[0]);
+      const cardId = isCash ? 'cash' : (card ? card.id : '');
+      const cardName = isCash ? '현금/계좌이체' : (card ? card.name : '');
       const cat = CATEGORIES.find(c => c.id === selectedExpenseCategory) || CATEGORIES[0];
 
-      // ⭐ 1. [기존 지출 내역 수정 처리]
+      // 1. [기존 지출 내역 수정 처리]
       if (editId) {
         const txIndex = transactions.findIndex(t => t.id === editId);
         if (txIndex !== -1) {
@@ -2498,8 +2611,9 @@
             date: dateVal,
             amount: totalAmount,
             merchant: merchant,
-            cardId: card.id,
-            cardName: card.name,
+            cardId: cardId,
+            cardName: cardName,
+            isCash: isCash,
             category: cat.id,
             categoryName: cat.name,
             isFixed: isFixed
@@ -2523,8 +2637,8 @@
         }
       }
 
-      // ⭐ 2. [새 지출 내역 추가 처리]
-      if (currentExpensePaymentType === 'installment') {
+      // 2. [새 지출 내역 추가 처리]
+      if (currentExpensePaymentType === 'installment' && !isCash) {
         const months = Number(document.getElementById('selectInstallmentMonths').value) || 3;
         const monthlyBase = Math.floor(totalAmount / months);
         const remainder = totalAmount - (monthlyBase * months);
@@ -2542,8 +2656,9 @@
             date: iDateStr,
             amount: instAmount,
             merchant: `${merchant} (${m + 1}/${months}회차)`,
-            cardId: card.id,
-            cardName: card.name,
+            cardId: cardId,
+            cardName: cardName,
+            isCash: false,
             category: cat.id,
             categoryName: cat.name,
             isInstallment: true,
@@ -2566,7 +2681,7 @@
           recurringTemplates.push({
             id: recurringId,
             name: merchant,
-            cardId: card.id,
+            cardId: cardId,
             amount: totalAmount,
             day: payDay,
             category: cat.id
@@ -2579,8 +2694,9 @@
           date: dateVal,
           amount: totalAmount,
           merchant: merchant,
-          cardId: card.id,
-          cardName: card.name,
+          cardId: cardId,
+          cardName: cardName,
+          isCash: isCash,
           category: cat.id,
           categoryName: cat.name,
           isFixed: isFixed,
@@ -2591,7 +2707,7 @@
         transactions.unshift(newTx);
         saveTransactions();
         syncAddGoogleSheet(newTx);
-        showToast('지출이 저장되었습니다.');
+        showToast(isCash ? '💵 현금/이체 지출이 기록되었습니다.' : '지출이 저장되었습니다.');
       }
 
       closeExpenseModal();
@@ -2760,16 +2876,19 @@
         if (!exists) {
           const dayStr = String(Math.min(rec.day || 1, 28)).padStart(2, '0');
           const dateStr = `${monthPrefix}-${dayStr}`;
-          const card = cards.find(c => c.id === rec.cardId) || cards[0];
-          const cat = CATEGORIES.find(c => c.id === rec.category) || CATEGORIES[3];
+          const isCash = (rec.cardId === 'cash');
+          const card = isCash ? null : (cards.find(c => c.id === rec.cardId) || cards[0]);
+          const cardName = isCash ? '현금/계좌이체' : (card ? card.name : '');
+          const cat = CATEGORIES.find(c => c.id === rec.category) || CATEGORIES[4];
 
           const newTx = {
             id: 'tx_rec_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
             date: dateStr,
             amount: Number(rec.amount),
             merchant: rec.name,
-            cardId: card.id,
-            cardName: card.name,
+            cardId: isCash ? 'cash' : (card ? card.id : ''),
+            cardName: cardName,
+            isCash: isCash,
             category: cat.id,
             categoryName: cat.name,
             isFixed: true,
@@ -2798,12 +2917,14 @@
         container.innerHTML = '<div class="text-xs text-slate-400 text-center py-4">등록된 고정지출 템플릿이 없습니다.</div>';
       } else {
         container.innerHTML = recurringTemplates.map(r => {
-          const card = cards.find(c => c.id === r.cardId);
+          const isCash = (r.cardId === 'cash');
+          const card = isCash ? null : cards.find(c => c.id === r.cardId);
+          const methodLabel = isCash ? '💵 현금/계좌이체' : (card ? card.name : '카드');
           return `
             <div class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-200">
               <div>
                 <span class="text-xs font-bold text-slate-800">${escapeHtml(r.name)}</span>
-                <span class="text-[10px] text-slate-400 block">매달 ${r.day}일 · ${escapeHtml(card ? card.name : '')}</span>
+                <span class="text-[10px] text-slate-400 block">매달 ${r.day}일 · ${escapeHtml(methodLabel)}</span>
               </div>
               <div class="flex items-center space-x-2">
                 <span class="text-xs font-black text-indigo-600">${Number(r.amount).toLocaleString('ko-KR')}원</span>
@@ -2869,9 +2990,9 @@
       const testItem = {
         id: 'test_' + Date.now(),
         date: getTodayDateStr(),
-        cardName: '연동테스트',
-        categoryName: '기타/이체',
-        merchant: '★가계부 연동 테스트★',
+        cardName: '현금/계좌이체',
+        categoryName: '경조사/회비',
+        merchant: '★가계부 연동 테스트 (현금)★',
         amount: 100
       };
       syncAddGoogleSheet(testItem);
@@ -2936,3 +3057,4 @@
   </script>
 </body>
 </html>
+```
