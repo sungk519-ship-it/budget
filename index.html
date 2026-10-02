@@ -207,7 +207,7 @@
         </div>
       </section>
 
-      <!-- 2. Credit Card Billing Cycle Settlement Box (핵심 기능: 카드별 청구 예정액) -->
+      <!-- 2. Credit Card Billing Cycle Settlement Box -->
       <section class="bg-white border border-slate-200/90 rounded-3xl p-4 shadow-sm space-y-3">
         <div class="flex items-center justify-between pb-1 border-b border-slate-100">
           <div class="flex items-center space-x-1.5">
@@ -225,9 +225,7 @@
         </p>
 
         <!-- Dynamic Card Settlement Rows -->
-        <div id="cardSettlementList" class="space-y-2">
-          <!-- Populated via JS -->
-        </div>
+        <div id="cardSettlementList" class="space-y-2"></div>
 
         <!-- Total Bill Due This Month for 4 Cards -->
         <div class="bg-indigo-50/70 rounded-2xl p-2.5 flex items-center justify-between text-xs">
@@ -236,15 +234,13 @@
         </div>
       </section>
 
-      <!-- 3. Credit Card 2x2 Grid View (횡스크롤 제거 및 2x2 배치) -->
+      <!-- 3. Credit Card 2x2 Grid View -->
       <section class="space-y-2">
         <div class="flex items-center justify-between">
           <span class="text-xs font-extrabold text-slate-700">신용카드 4종 카드 뷰</span>
           <span class="text-[11px] text-slate-400">카드를 눌러 지출 필터링</span>
         </div>
-        <div id="cardSliderContainer" class="grid grid-cols-2 gap-2.5 py-1 px-0.5">
-          <!-- 4 Card Elements generated via JS in 2x2 grid -->
-        </div>
+        <div id="cardSliderContainer" class="grid grid-cols-2 gap-2.5 py-1 px-0.5"></div>
       </section>
 
       <!-- 4. Monthly Fixed Expenses Quick Bar -->
@@ -265,9 +261,7 @@
       <!-- 5. Filter Chips & Clear Action -->
       <section class="space-y-2">
         <div class="flex items-center justify-between">
-          <div id="filterChipBar" class="flex space-x-1.5 overflow-x-auto no-scrollbar py-1">
-            <!-- Filter items populated via JS -->
-          </div>
+          <div id="filterChipBar" class="flex space-x-1.5 overflow-x-auto no-scrollbar py-1"></div>
           <button onclick="promptClearMonth()" title="이번 달 내역 전체 삭제" class="w-7 h-7 rounded-lg flex-shrink-0 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition ml-1">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
           </button>
@@ -280,9 +274,7 @@
           <span>지출 내역 목록</span>
           <span id="filteredListCount" class="text-slate-400">총 0건</span>
         </div>
-        <div id="transactionList" class="space-y-2.5">
-          <!-- Dynamically populated transaction cards -->
-        </div>
+        <div id="transactionList" class="space-y-2.5"></div>
       </section>
     </main>
 
@@ -308,9 +300,7 @@
           <span class="text-blue-500">토</span>
         </div>
         <!-- Calendar Days Grid -->
-        <div id="calendarDaysGrid" class="grid grid-cols-7 gap-1">
-          <!-- Injected via JavaScript -->
-        </div>
+        <div id="calendarDaysGrid" class="grid grid-cols-7 gap-1"></div>
       </div>
 
       <!-- Selected Day Details Container -->
@@ -331,9 +321,7 @@
           </div>
           <span id="selectedDateTotal" class="text-xs font-black text-rose-600">0원</span>
         </div>
-        <div id="selectedDateTransactions" class="space-y-2">
-          <!-- Daily items injected via JS -->
-        </div>
+        <div id="selectedDateTransactions" class="space-y-2"></div>
       </div>
     </main>
 
@@ -387,9 +375,7 @@
           </div>
           <button onclick="openLoanModal()" class="text-xs font-bold text-indigo-600 hover:text-indigo-800">+ 대출 추가</button>
         </div>
-        <div id="loanCardList" class="space-y-3">
-          <!-- Loan cards injected via JS -->
-        </div>
+        <div id="loanCardList" class="space-y-3"></div>
       </section>
     </main>
 
@@ -523,7 +509,7 @@
       </div>
     </div>
 
-    <!-- 3. Loan Creation Modal (매월 납입 예정금 직접 입력 필드 탑재) -->
+    <!-- 3. Loan Creation Modal (시작일 & 종료일 필드 장착) -->
     <div id="loanModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex flex-col justify-end hidden opacity-0 transition-opacity duration-200">
       <div id="loanSheetContent" class="modal-sheet closed w-full max-w-md mx-auto bg-white rounded-t-3xl p-5 max-h-[92vh] overflow-y-auto no-scrollbar shadow-2xl space-y-4">
         <div class="flex items-center justify-between pb-2 border-b border-slate-100">
@@ -540,35 +526,51 @@
           <input type="hidden" id="editLoanId" value="">
           <div>
             <label class="block text-xs font-bold text-slate-600 mb-1">대출 명칭</label>
-            <input type="text" id="inputLoanName" placeholder="예: 버팀목 전세자금대출, 카뱅 신용대출" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <input type="text" id="inputLoanName" placeholder="예: BNK 신용, 버팀목 전세자금대출" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
           </div>
 
-          <!-- Monthly Planned Amount (핵심: 은행 출금 예정액 직접 입력) -->
+          <!-- Monthly Planned Amount -->
           <div class="p-3 bg-rose-50/80 rounded-2xl border border-rose-200/80 space-y-1">
             <div class="flex items-center justify-between">
               <label class="text-xs font-extrabold text-rose-900">매월 실제 출금 예정액 (원) ⭐</label>
               <span class="text-[10px] text-rose-600 font-bold">오차 없는 지출 예상 반영</span>
             </div>
-            <input type="number" id="inputLoanMonthlyPlanned" placeholder="예: 542000" min="0" required class="w-full px-3 py-2 rounded-xl border border-rose-300 text-base font-black text-rose-700 bg-white focus:outline-none focus:ring-2 focus:ring-rose-500">
+            <input type="number" id="inputLoanMonthlyPlanned" placeholder="예: 296864" min="0" required class="w-full px-3 py-2 rounded-xl border border-rose-300 text-base font-black text-rose-700 bg-white focus:outline-none focus:ring-2 focus:ring-rose-500">
             <p class="text-[10px] text-rose-600">은행 알림톡이나 고지서에 나오는 당월 총 출금액을 적어두시면 공식 오차 없이 정확히 지출 예상에 합산됩니다.</p>
+          </div>
+
+          <!-- Loan Start & End Dates (신규 추가: 대출 기간 설정) -->
+          <div class="p-3 bg-indigo-50/60 border border-indigo-100 rounded-2xl space-y-2">
+            <span class="block text-xs font-extrabold text-indigo-950">대출 기간 (시작일 & 만기 종료일) 📅</span>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[11px] font-bold text-slate-600 mb-1">대출 시작일</label>
+                <input type="date" id="inputLoanStartDate" onchange="autoSuggestEndDate()" class="w-full px-2.5 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 bg-white focus:ring-2 focus:ring-indigo-500">
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-indigo-700 mb-1">대출 만기(종료)일 ⭐</label>
+                <input type="date" id="inputLoanEndDate" class="w-full px-2.5 py-2 rounded-xl border border-indigo-300 text-xs font-black text-indigo-900 bg-white focus:ring-2 focus:ring-indigo-500">
+              </div>
+            </div>
+            <p class="text-[9.5px] text-slate-500 leading-tight">만기 종료일을 입력해 두면 대출 카드에 <strong>종료일과 D-Day(남은 총 일수)</strong>가 실시간으로 표시됩니다.</p>
           </div>
 
           <!-- Institution and Account -->
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="block text-xs font-bold text-slate-600 mb-1">금융기관</label>
-              <input type="text" id="inputLoanBank" placeholder="예: 국민은행, 카카오뱅크" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <input type="text" id="inputLoanBank" placeholder="예: BNK경남은행" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-600 mb-1">자동이체 출금계좌</label>
-              <input type="text" id="inputLoanAccount" placeholder="예: 국민 123-456-789" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <input type="text" id="inputLoanAccount" placeholder="예: BNK경남은행 2070191798500" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="block text-xs font-bold text-slate-600 mb-1">연 이자율 (%)</label>
-              <input type="number" id="inputLoanRate" step="0.01" min="0" placeholder="예: 4.5" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <input type="number" id="inputLoanRate" step="0.01" min="0" placeholder="예: 7.48" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-600 mb-1">매월 납입일 (달력 빨간표시)</label>
@@ -581,11 +583,11 @@
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="block text-xs font-bold text-slate-600 mb-1">최초 원금 (원)</label>
-              <input type="number" id="inputLoanOriginal" placeholder="예: 50000000" min="10000" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <input type="number" id="inputLoanOriginal" placeholder="예: 25000000" min="10000" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-600 mb-1">현재 남은 잔액 (원)</label>
-              <input type="number" id="inputLoanBalance" placeholder="예: 45000000" min="0" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <input type="number" id="inputLoanBalance" placeholder="예: 22199850" min="0" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
             </div>
           </div>
 
@@ -600,7 +602,7 @@
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-600 mb-1">총 기간 (개월)</label>
-              <input type="number" id="inputLoanTermMonths" placeholder="예: 120" min="1" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <input type="number" id="inputLoanTermMonths" onchange="autoSuggestEndDate()" placeholder="예: 120" min="1" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
             </div>
           </div>
 
@@ -648,7 +650,7 @@
       </div>
     </div>
 
-    <!-- 5. Card Settings Modal (결제일 & 사용기간 산정 기준 커스텀) -->
+    <!-- 5. Card Settings Modal -->
     <div id="cardSettingsModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex flex-col justify-end hidden opacity-0 transition-opacity duration-200">
       <div id="cardSheetContent" class="modal-sheet closed w-full max-w-md mx-auto bg-white rounded-t-3xl p-5 max-h-[92vh] overflow-y-auto no-scrollbar shadow-2xl space-y-4">
         <div class="flex items-center justify-between pb-2 border-b border-slate-100">
@@ -1147,15 +1149,8 @@
     }
 
     /* =========================================================
-       4. BILLING CYCLE & SETTLEMENT CALCULATION (신용카드 정산 핵심)
+       4. BILLING CYCLE & SETTLEMENT CALCULATION
        ========================================================= */
-    /**
-     * 특정 카드의 결제일 기준 이용기간(사용 시작일~종료일) 도출
-     * @param {Object} card 
-     * @param {number} targetYear 
-     * @param {number} targetMonth 
-     * @param {boolean} isForNextMonth 
-     */
     function getCardBillingPeriod(card, targetYear, targetMonth, isForNextMonth = false) {
       let payYear = targetYear;
       let payMonth = targetMonth;
@@ -1171,14 +1166,12 @@
         startYear = payYear; startMonth = payMonth; startDay = 1;
         endYear = payYear; endMonth = payMonth; endDay = new Date(payYear, payMonth, 0).getDate();
       } else if (card.cycleType === 'custom_cycle') {
-        // 전월 N일 ~ 당월 M일
         let prevYear = payYear;
         let prevMonth = payMonth - 1;
         if (prevMonth < 1) { prevMonth = 12; prevYear -= 1; }
         startYear = prevYear; startMonth = prevMonth; startDay = card.cycleStartDay || 12;
         endYear = payYear; endMonth = payMonth; endDay = card.cycleEndDay || 11;
       } else {
-        // 기본값: 전월 1일 ~ 전월 말일
         let prevYear = payYear;
         let prevMonth = payMonth - 1;
         if (prevMonth < 1) { prevMonth = 12; prevYear -= 1; }
@@ -1200,9 +1193,6 @@
       };
     }
 
-    /**
-     * 해당 이용기간 내 발생한 카드 사용 총액 계산
-     */
     function calculateCardBilledAmount(cardId, startDateStr, endDateStr) {
       return transactions.filter(t => {
         if (t.cardId !== cardId) return false;
@@ -1212,7 +1202,7 @@
     }
 
     /* =========================================================
-       5. DASHBOARD & RENDER ENGINE (의무 지출 예상 + 실지출 분리)
+       5. DASHBOARD & RENDER ENGINE
        ========================================================= */
     function getMonthTransactions() {
       const monthPrefix = `${currentYear}-${String(currentMonth).padStart(2, '0')}`;
@@ -1222,13 +1212,10 @@
     function renderDashboard() {
       const monthTxs = getMonthTransactions();
 
-      // 1. Calculate Expected Mandatory Expenses
-      // Fixed recurring template sum + Loan planned monthly payments
       const fixedTemplateSum = (recurringTemplates || []).reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
       const loanPlannedSum = (loans || []).reduce((sum, l) => sum + (Number(l.monthlyPlanned) || Number(l.balance > 0 ? 300000 : 0)), 0);
       const totalExpectedMandatory = fixedTemplateSum + loanPlannedSum;
 
-      // 2. Calculate Actual Spending
       let totalActual = 0;
       let actualVariable = 0;
       let actualFixed = 0;
@@ -1242,12 +1229,10 @@
         else actualVariable += amt;
       });
 
-      // 3. Mandatory Spending Progress (Completed vs Pending)
       const mandatoryCompleted = actualFixed + actualLoan;
       const mandatoryPending = Math.max(0, totalExpectedMandatory - mandatoryCompleted);
       const mandatoryPercent = totalExpectedMandatory > 0 ? Math.min(100, Math.round((mandatoryCompleted / totalExpectedMandatory) * 100)) : 0;
 
-      // Update Top Card Elements
       document.getElementById('statExpectedMandatoryTotal').textContent = totalExpectedMandatory.toLocaleString('ko-KR');
       document.getElementById('statExpectedFixedSub').textContent = fixedTemplateSum.toLocaleString('ko-KR') + '원';
       document.getElementById('statExpectedLoanSub').textContent = loanPlannedSum.toLocaleString('ko-KR') + '원';
@@ -1262,7 +1247,6 @@
       document.getElementById('statFixedExpense').textContent = actualFixed.toLocaleString('ko-KR') + '원';
       document.getElementById('statLoanExpense').textContent = actualLoan.toLocaleString('ko-KR') + '원';
 
-      // Fixed quick bar
       const fixedTxs = monthTxs.filter(t => t.isFixed);
       document.getElementById('fixedCountBadge').textContent = `${fixedTxs.length}건`;
       const quickContainer = document.getElementById('fixedExpenseQuickList');
@@ -1283,7 +1267,6 @@
         }).join('');
       }
 
-      // Render Credit Card Settlement Box
       renderCardSettlementBox();
     }
 
@@ -1297,12 +1280,10 @@
       container.innerHTML = cards.map(c => {
         const tint = CARD_THEME_TINTS[c.colorTheme] || CARD_THEME_TINTS['violet'];
 
-        // This Month's Payment Bill Info
         const thisBillInfo = getCardBillingPeriod(c, currentYear, currentMonth, false);
         const thisBilledAmt = calculateCardBilledAmount(c.id, thisBillInfo.startDateStr, thisBillInfo.endDateStr);
         totalBilledThisMonthSum += thisBilledAmt;
 
-        // Next Month's Payment Bill Accumulation Info
         const nextBillInfo = getCardBillingPeriod(c, currentYear, currentMonth, true);
         const nextBilledAmt = calculateCardBilledAmount(c.id, nextBillInfo.startDateStr, nextBillInfo.endDateStr);
 
@@ -1314,7 +1295,6 @@
             </div>
 
             <div class="grid grid-cols-2 gap-2 text-xs pt-0.5">
-              <!-- This Month Payment -->
               <div class="rounded-xl p-2 border shadow-2xs ${tint.subBox}">
                 <div class="flex items-center justify-between text-[10px] text-slate-500 mb-0.5 font-medium">
                   <span>이번 달 결제(${currentMonth}/${c.payDay || 14})</span>
@@ -1323,7 +1303,6 @@
                 <div class="text-[9.5px] ${tint.subLabel} mt-0.5 font-medium">산정: ${thisBillInfo.displayPeriod}</div>
               </div>
 
-              <!-- Next Month Payment Forecast -->
               <div class="rounded-xl p-2 border shadow-2xs ${tint.subBox}">
                 <div class="flex items-center justify-between text-[10px] font-bold mb-0.5 ${tint.accentText}">
                   <span>차기 청구 예정</span>
@@ -1464,7 +1443,6 @@
           paymentBadge = `<span class="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded text-[10px] font-bold">${escapeHtml(item.cardName)}</span>`;
         }
 
-        // Apply distinct card border & background color based on category (Red for Convenience)
         let rowCardClass = cat.cardStyle;
         if (item.isLoan) {
           rowCardClass = 'bg-rose-50/85 border-rose-200 border-l-4 border-l-rose-500 text-rose-950';
@@ -1644,7 +1622,16 @@
       if (matchingLoans.length > 0) {
         loanAlertBox.classList.remove('hidden');
         loanAlertDetails.innerHTML = matchingLoans.map(l => {
-          return `<div>• <strong>${escapeHtml(l.name)}</strong> : 출금계좌 <strong>${escapeHtml(l.account || l.bank + ' 계좌')}</strong> (예정액: ${Number(l.monthlyPlanned || 0).toLocaleString()}원)</div>`;
+          const accText = l.account || (l.bank + ' 계좌');
+          return `
+            <div class="flex items-center justify-between py-0.5">
+              <span>• <strong>${escapeHtml(l.name)}</strong> (예정: ${Number(l.monthlyPlanned || 0).toLocaleString()}원)</span>
+              <button type="button" onclick="copyAccountNumber('${escapeHtml(accText)}', event)" class="ml-1 inline-flex items-center space-x-1 px-1.5 py-0.5 rounded bg-white text-rose-700 border border-rose-300 active:scale-95 text-[10px] font-bold">
+                <span>${escapeHtml(accText)}</span>
+                <span class="text-[9px] bg-rose-100 px-1 rounded">복사</span>
+              </button>
+            </div>
+          `;
         }).join('');
       } else {
         loanAlertBox.classList.add('hidden');
@@ -1675,7 +1662,7 @@
     }
 
     /* =========================================================
-       8. LOAN VIEW & DIRECT MONTHLY PAYMENT SETUP
+       8. LOAN VIEW & DATE CALCULATION (대출 종료일 & D-Day 표시)
        ========================================================= */
     function renderLoanView() {
       const container = document.getElementById('loanCardList');
@@ -1711,10 +1698,8 @@
         totalBalance += bal;
         totalOriginal += orig;
 
-        // User direct monthly planned payment
         monthlyTotalDuePlanned += (Number(loan.monthlyPlanned) || 0);
 
-        // Interest estimate based on rate
         const rate = (Number(loan.rate) || 0) / 100 / 12;
         monthlyInterestDueEst += Math.round(bal * rate);
       });
@@ -1743,6 +1728,45 @@
           'bullet': '만기 일시'
         };
 
+        const accountDisplay = loan.account || (loan.bank + ' 계좌');
+
+        // D-Day & Remaining Days Calculation
+        let periodDdayBox = '';
+        if (loan.endDate) {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const end = new Date(loan.endDate);
+          end.setHours(0, 0, 0, 0);
+          const diffTime = end.getTime() - today.getTime();
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+          let ddayBadge = '';
+          if (diffDays > 0) {
+            ddayBadge = `<span class="bg-indigo-600 text-white px-2 py-0.5 rounded-md font-black text-[11px] shadow-xs">D-${diffDays.toLocaleString('ko-KR')}일</span>`;
+          } else if (diffDays === 0) {
+            ddayBadge = `<span class="bg-rose-600 text-white px-2 py-0.5 rounded-md font-black text-[11px] animate-pulse">D-Day (오늘 만기)</span>`;
+          } else {
+            ddayBadge = `<span class="bg-slate-200 text-slate-700 px-2 py-0.5 rounded-md font-extrabold text-[10px]">만기경과 (+${Math.abs(diffDays).toLocaleString('ko-KR')}일)</span>`;
+          }
+
+          periodDdayBox = `
+            <div class="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-xs bg-slate-50/80 p-2.5 rounded-2xl">
+              <div class="space-y-0.5">
+                <span class="text-[10px] text-slate-400 block font-medium">대출 종료일(만기)</span>
+                <div class="flex items-center space-x-1.5 font-bold text-slate-800">
+                  <svg class="w-3.5 h-3.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                  <span>${loan.endDate}</span>
+                  ${loan.startDate ? `<span class="text-[10px] text-slate-400 font-normal">(${loan.startDate}~)</span>` : ''}
+                </div>
+              </div>
+              <div class="text-right flex flex-col items-end space-y-0.5">
+                <span class="text-[10px] text-slate-400 font-medium">총 남은 기간</span>
+                ${ddayBadge}
+              </div>
+            </div>
+          `;
+        }
+
         return `
           <div class="bg-white rounded-3xl p-4 border border-slate-100 shadow-sm space-y-3">
             <div class="flex items-center justify-between">
@@ -1759,33 +1783,42 @@
               </div>
             </div>
 
-            <!-- Designated Account & User Direct Monthly Due Bar -->
-            <div class="bg-rose-50/60 border border-rose-100 rounded-2xl p-2.5 flex items-center justify-between text-xs">
-              <div class="space-y-0.5">
-                <div class="flex items-center space-x-1 text-slate-600">
-                  <span class="font-bold">출금계좌:</span>
-                  <span class="font-mono font-bold text-slate-900">${escapeHtml(loan.account || loan.bank + ' 계좌')}</span>
+            <!-- Designated Account & User Direct Monthly Due Bar with One-Touch Copy -->
+            <div class="bg-rose-50/70 border border-rose-200/80 rounded-2xl p-2.5 flex items-center justify-between text-xs">
+              <div class="space-y-1 overflow-hidden pr-1">
+                <div class="flex items-center space-x-1.5 text-slate-700">
+                  <span class="font-bold flex-shrink-0 text-slate-600">출금계좌:</span>
+                  <button type="button" onclick="copyAccountNumber('${escapeHtml(accountDisplay)}', event)" class="inline-flex items-center space-x-1.5 bg-white hover:bg-rose-100/60 active:scale-95 border border-rose-300/80 px-2 py-1 rounded-xl transition text-left group shadow-2xs" title="터치하여 계좌번호 복사">
+                    <span class="font-mono font-black text-xs text-slate-900 group-hover:text-rose-700 truncate">${escapeHtml(accountDisplay)}</span>
+                    <svg class="w-3.5 h-3.5 text-rose-500 flex-shrink-0 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    <span class="text-[9px] bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded-md font-bold flex-shrink-0">복사</span>
+                  </button>
                 </div>
-                <div class="text-[10px] text-rose-700 font-extrabold">매월 지정 출금액: ${plannedAmt.toLocaleString('ko-KR')}원</div>
+                <div class="text-[10.5px] text-rose-700 font-extrabold">매월 지정 출금액: ${plannedAmt.toLocaleString('ko-KR')}원</div>
               </div>
-              <span class="text-[10px] text-rose-700 font-black bg-white px-2 py-1 rounded-lg border border-rose-200">매월 ${loan.payDay || 25}일</span>
+              <span class="text-[10px] text-rose-700 font-black bg-white px-2 py-1 rounded-lg border border-rose-200 flex-shrink-0 ml-1">매월 ${loan.payDay || 25}일</span>
             </div>
 
-            <!-- Balances -->
-            <div class="flex items-baseline justify-between pt-1">
-              <div>
-                <span class="text-[10px] text-slate-400 block">남은 잔액</span>
-                <span class="text-lg font-extrabold text-slate-900">${bal.toLocaleString('ko-KR')}원</span>
+            <!-- Balances & Percent Section -->
+            <div class="pt-1 space-y-1">
+              <div class="flex items-baseline justify-between">
+                <div>
+                  <span class="text-[10px] text-slate-400 block">남은 잔액</span>
+                  <span class="text-lg font-extrabold text-slate-900">${bal.toLocaleString('ko-KR')}원</span>
+                </div>
+                <div class="text-right">
+                  <span class="text-[10px] text-slate-400 block">상환율</span>
+                  <span class="text-xs font-black text-emerald-600">${percent}%</span>
+                </div>
               </div>
-              <div class="text-right">
-                <span class="text-[10px] text-slate-400 block">상환율</span>
-                <span class="text-xs font-black text-emerald-600">${percent}%</span>
-              </div>
-            </div>
 
-            <!-- Progress Bar -->
-            <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-              <div class="bg-indigo-600 h-1.5 rounded-full" style="width: ${percent}%"></div>
+              <!-- Progress Bar -->
+              <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                <div class="bg-indigo-600 h-1.5 rounded-full" style="width: ${percent}%"></div>
+              </div>
+
+              <!-- End Date & Remaining Days D-Day Box -->
+              ${periodDdayBox}
             </div>
 
             <!-- Action Buttons -->
@@ -1803,6 +1836,52 @@
           </div>
         `;
       }).join('');
+    }
+
+    function autoSuggestEndDate() {
+      const startVal = document.getElementById('inputLoanStartDate').value;
+      const termMonths = Number(document.getElementById('inputLoanTermMonths').value) || 0;
+      const endInput = document.getElementById('inputLoanEndDate');
+
+      if (startVal && termMonths > 0 && !endInput.value) {
+        const [y, m, d] = startVal.split('-').map(Number);
+        const target = new Date(y, m - 1 + termMonths, d);
+        const endY = target.getFullYear();
+        const endM = String(target.getMonth() + 1).padStart(2, '0');
+        const endD = String(target.getDate()).padStart(2, '0');
+        endInput.value = `${endY}-${endM}-${endD}`;
+      }
+    }
+
+    function copyAccountNumber(text, e) {
+      if (e) e.stopPropagation();
+      playTapSound('C6');
+      if (!text) return;
+
+      const fallbackCopy = (str) => {
+        const tempTextarea = document.createElement('textarea');
+        tempTextarea.value = str;
+        tempTextarea.style.position = 'fixed';
+        tempTextarea.style.opacity = '0';
+        document.body.appendChild(tempTextarea);
+        tempTextarea.focus();
+        tempTextarea.select();
+        try {
+          document.execCommand('copy');
+          showToast(`📋 계좌번호 복사됨: ${str}`);
+        } catch (err) {
+          showToast('복사에 실패했습니다.');
+        }
+        document.body.removeChild(tempTextarea);
+      };
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast(`📋 계좌번호 복사됨: ${text}`);
+        }).catch(() => fallbackCopy(text));
+      } else {
+        fallbackCopy(text);
+      }
     }
 
     function editLoanDirect(loanId) {
@@ -1841,7 +1920,6 @@
       const interestEst = Math.round((Number(loan.balance) || 0) * rate);
       document.getElementById('inputRepayInterest').value = interestEst;
 
-      // Suggest remaining principal from planned amount
       const planned = Number(loan.monthlyPlanned) || 0;
       const suggestedPrincipal = Math.max(0, planned - interestEst);
       document.getElementById('inputRepayPrincipal').value = suggestedPrincipal > 0 ? suggestedPrincipal : '';
@@ -1897,7 +1975,7 @@
     }
 
     /* =========================================================
-       9. CARD SETTINGS MODAL (결제일 & 산정기간 상세 커스텀)
+       9. CARD SETTINGS MODAL
        ========================================================= */
     function openCardSettingsModal() {
       playTapSound('C5');
@@ -1913,13 +1991,11 @@
               <span class="text-[10px] bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full font-bold">결제일 정산</span>
             </div>
 
-            <!-- Card Name -->
             <div>
               <label class="block text-[11px] font-bold text-slate-600 mb-1">카드 별칭</label>
               <input type="text" id="cardNameInput_${c.id}" value="${escapeHtml(c.name)}" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-800">
             </div>
 
-            <!-- Payment Due Day (1~31) -->
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="block text-[11px] font-bold text-slate-600 mb-1">매월 결제일</label>
@@ -1928,7 +2004,6 @@
                 </select>
               </div>
 
-              <!-- Cycle Type Select -->
               <div>
                 <label class="block text-[11px] font-bold text-slate-600 mb-1">이용 기간(산정) 기준</label>
                 <select id="cardCycleTypeSelect_${c.id}" onchange="toggleCardCustomCycle('${c.id}')" class="w-full px-2.5 py-2 rounded-xl border border-slate-200 text-[11px] font-bold text-slate-800">
@@ -1939,7 +2014,6 @@
               </div>
             </div>
 
-            <!-- Custom Cycle Range Inputs (Hidden if not custom) -->
             <div id="cardCustomRangeBox_${c.id}" class="${c.cycleType === 'custom_cycle' ? '' : 'hidden'} bg-white p-2.5 rounded-2xl border border-slate-200/80 space-y-1">
               <span class="block text-[10px] font-bold text-slate-500">직접 지정: 전월 시작일 ~ 당월 종료일</span>
               <div class="flex items-center space-x-1.5 text-xs font-bold text-slate-700">
@@ -1951,7 +2025,6 @@
               </div>
             </div>
 
-            <!-- Theme Color Selector -->
             <div>
               <span class="block text-[10px] font-bold text-slate-400 mb-1">테마 색상</span>
               <div class="grid grid-cols-4 gap-1.5">
@@ -2248,7 +2321,7 @@
       const sheet = document.getElementById('loanSheetContent');
       
       const selectDay = document.getElementById('selectLoanPayDay');
-      selectDay.innerHTML = Array.from({ length: 31 }, (_, i) => `<option value="${i + 1}" ${i + 1 === 25 ? 'selected' : ''}>매월 ${i + 1}일</option>`).join('');
+      selectDay.innerHTML = Array.from({ length: 31 }, (_, i) => `<option value="${i + 1}" ${i + 1 === 10 ? 'selected' : ''}>매월 ${i + 1}일</option>`).join('');
 
       document.getElementById('loanForm').reset();
       document.getElementById('editLoanId').value = '';
@@ -2257,10 +2330,12 @@
         document.getElementById('editLoanId').value = existingLoan.id;
         document.getElementById('inputLoanName').value = existingLoan.name || '';
         document.getElementById('inputLoanMonthlyPlanned').value = existingLoan.monthlyPlanned || '';
+        document.getElementById('inputLoanStartDate').value = existingLoan.startDate || '';
+        document.getElementById('inputLoanEndDate').value = existingLoan.endDate || '';
         document.getElementById('inputLoanBank').value = existingLoan.bank || '';
         document.getElementById('inputLoanAccount').value = existingLoan.account || '';
         document.getElementById('inputLoanRate').value = existingLoan.rate || '';
-        selectDay.value = existingLoan.payDay || 25;
+        selectDay.value = existingLoan.payDay || 10;
         document.getElementById('inputLoanOriginal').value = existingLoan.original || '';
         document.getElementById('inputLoanBalance').value = existingLoan.balance || '';
         document.getElementById('selectLoanType').value = existingLoan.type || 'equal_principal_interest';
@@ -2288,13 +2363,15 @@
       const loanData = {
         name: document.getElementById('inputLoanName').value.trim(),
         monthlyPlanned: Number(document.getElementById('inputLoanMonthlyPlanned').value) || 0,
+        startDate: document.getElementById('inputLoanStartDate').value || '',
+        endDate: document.getElementById('inputLoanEndDate').value || '',
         bank: document.getElementById('inputLoanBank').value.trim(),
         account: document.getElementById('inputLoanAccount').value.trim(),
         rate: Number(document.getElementById('inputLoanRate').value) || 0,
         original: Number(document.getElementById('inputLoanOriginal').value) || 0,
         balance: Number(document.getElementById('inputLoanBalance').value) || 0,
         type: document.getElementById('selectLoanType').value,
-        payDay: Number(document.getElementById('selectLoanPayDay').value) || 25,
+        payDay: Number(document.getElementById('selectLoanPayDay').value) || 10,
         termMonths: Number(document.getElementById('inputLoanTermMonths').value) || 120
       };
 
