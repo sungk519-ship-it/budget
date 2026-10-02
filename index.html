@@ -1,0 +1,2085 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>모바일 수기 가계부</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tone.js for soft audio feedback -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+  <!-- Google Fonts: Inter & Noto Sans KR -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      font-family: 'Inter', 'Noto Sans KR', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      box-sizing: border-box;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .modal-sheet {
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+    }
+    .modal-sheet.closed {
+      transform: translateY(100%);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .safe-bottom-padding {
+      padding-bottom: max(5.5rem, calc(4.5rem + env(safe-area-inset-bottom)));
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+    .shake-animation {
+      animation: shake 0.35s ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex justify-center selection:bg-indigo-500 selection:text-white">
+
+  <!-- ==================== 1. SECURITY PIN LOCK SCREEN ==================== -->
+  <div id="lockScreen" class="fixed inset-0 z-50 bg-slate-900 text-white flex flex-col items-center justify-between p-6 select-none transition-opacity duration-300">
+    <!-- Top lock logo & message -->
+    <div class="pt-10 flex flex-col items-center text-center space-y-3">
+      <div class="w-16 h-16 rounded-3xl bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center text-indigo-400 shadow-lg shadow-indigo-600/30">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+      </div>
+      <div>
+        <h2 class="text-xl font-extrabold tracking-tight">마이 가계부</h2>
+        <p id="lockScreenSubText" class="text-xs text-slate-400 mt-1 font-medium">보안을 위해 4자리 비밀번호를 입력해주세요</p>
+      </div>
+      
+      <!-- 4 PIN Dots Indicator -->
+      <div id="pinDotsContainer" class="flex space-x-4 pt-4">
+        <div id="pinDot0" class="w-3.5 h-3.5 rounded-full border-2 border-slate-600 transition-all duration-200"></div>
+        <div id="pinDot1" class="w-3.5 h-3.5 rounded-full border-2 border-slate-600 transition-all duration-200"></div>
+        <div id="pinDot2" class="w-3.5 h-3.5 rounded-full border-2 border-slate-600 transition-all duration-200"></div>
+        <div id="pinDot3" class="w-3.5 h-3.5 rounded-full border-2 border-slate-600 transition-all duration-200"></div>
+      </div>
+    </div>
+
+    <!-- Numeric Keypad Grid (3x4) -->
+    <div class="w-full max-w-xs grid grid-cols-3 gap-3.5 pb-6">
+      <button onclick="pressPinKey('1')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition">1</button>
+      <button onclick="pressPinKey('2')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition">2</button>
+      <button onclick="pressPinKey('3')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition">3</button>
+      <button onclick="pressPinKey('4')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition">4</button>
+      <button onclick="pressPinKey('5')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition">5</button>
+      <button onclick="pressPinKey('6')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition">6</button>
+      <button onclick="pressPinKey('7')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition">7</button>
+      <button onclick="pressPinKey('8')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition">8</button>
+      <button onclick="pressPinKey('9')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition">9</button>
+      <button onclick="resetPinInput()" class="h-16 rounded-2xl text-xs font-bold text-slate-400 hover:text-white flex items-center justify-center active:scale-95 transition">전체삭제</button>
+      <button onclick="pressPinKey('0')" class="h-16 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-xl font-extrabold flex items-center justify-center transition">0</button>
+      <button onclick="deletePinLast()" class="h-16 rounded-2xl text-slate-300 hover:text-white flex items-center justify-center active:scale-95 transition">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-7.172a2 2 0 00-1.414.586L3 12z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="appContainer" class="w-full max-w-md bg-white min-h-screen flex flex-col relative shadow-2xl overflow-x-hidden safe-bottom-padding">
+
+    <!-- Top Sticky Header -->
+    <header class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-100 px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <button onclick="changeMonth(-1)" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 active:scale-95 transition text-slate-600">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <button onclick="openMonthPickerModal()" class="flex items-center space-x-1 font-extrabold text-base text-slate-800 hover:text-indigo-600 transition">
+          <span id="currentMonthLabel">2026년 10월</span>
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <button onclick="changeMonth(1)" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 active:scale-95 transition text-slate-600">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+
+      <!-- Action Buttons (Sheets, Recurring, Cards, Lock) -->
+      <div class="flex items-center space-x-1">
+        <!-- Google Sheets Webhook Sync Button -->
+        <button onclick="openGoogleSheetModal()" title="구글 스프레드시트 연동" class="w-9 h-9 rounded-xl flex items-center justify-center bg-emerald-50 text-emerald-600 hover:bg-emerald-100 active:scale-95 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        </button>
+        <!-- Recurring Fixed Expenses Setup -->
+        <button onclick="openRecurringModal()" title="매달 고정지출 관리" class="w-9 h-9 rounded-xl flex items-center justify-center bg-indigo-50 text-indigo-600 hover:bg-indigo-100 active:scale-95 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        </button>
+        <!-- Card Names & Colors Setup -->
+        <button onclick="openCardSettingsModal()" title="신용카드 4종 설정" class="w-9 h-9 rounded-xl flex items-center justify-center bg-slate-100 text-slate-700 hover:bg-slate-200 active:scale-95 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+        </button>
+        <!-- Manual App Lock Button -->
+        <button onclick="lockAppManually()" title="가계부 화면 잠그기" class="w-9 h-9 rounded-xl flex items-center justify-center bg-amber-50 text-amber-600 hover:bg-amber-100 active:scale-95 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Top Tab Navigation (3 Tabs) -->
+    <nav class="bg-white px-4 pt-2 pb-1 border-b border-slate-100 grid grid-cols-3 gap-1">
+      <button id="tabBtnTransactions" onclick="switchMainTab('transactions')" class="py-2 text-xs font-bold rounded-xl transition flex flex-col items-center justify-center bg-indigo-50 text-indigo-600">
+        <span>내역 · 요약</span>
+      </button>
+      <button id="tabBtnCalendar" onclick="switchMainTab('calendar')" class="py-2 text-xs font-bold rounded-xl transition flex flex-col items-center justify-center text-slate-500 hover:bg-slate-50">
+        <span>월간 달력</span>
+      </button>
+      <button id="tabBtnLoans" onclick="switchMainTab('loans')" class="py-2 text-xs font-bold rounded-xl transition flex flex-col items-center justify-center text-slate-500 hover:bg-slate-50 relative">
+        <span>대출 관리</span>
+        <span id="loanTabBadge" class="hidden absolute top-1 right-2 w-2 h-2 rounded-full bg-rose-500"></span>
+      </button>
+    </nav>
+
+    <main id="tabTransactionsView" class="p-4 space-y-5">
+      <!-- Total Expense Main Card -->
+      <section class="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 text-white rounded-3xl p-5 shadow-lg relative overflow-hidden">
+        <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl"></div>
+        <div class="flex items-center justify-between text-xs text-slate-400 font-medium mb-1">
+          <span>이번 달 총 지출</span>
+          <span class="bg-white/10 px-2 py-0.5 rounded-full text-[10px] text-indigo-200 font-semibold">신용카드 4종 + 계좌 대출</span>
+        </div>
+        <div class="flex items-baseline space-x-1 mb-4">
+          <span id="statTotalExpense" class="text-3xl font-extrabold tracking-tight">0</span>
+          <span class="text-lg font-bold text-slate-300">원</span>
+        </div>
+
+        <!-- 3-Way Sub Breakdown -->
+        <div class="grid grid-cols-3 gap-2 pt-3 border-t border-white/10 text-center">
+          <div class="bg-white/5 rounded-xl py-2 px-1">
+            <span class="block text-[10px] text-slate-400 mb-0.5">변동 지출</span>
+            <span id="statVariableExpense" class="text-xs font-bold text-emerald-300">0원</span>
+          </div>
+          <div class="bg-white/5 rounded-xl py-2 px-1">
+            <span class="block text-[10px] text-slate-400 mb-0.5">고정 지출</span>
+            <span id="statFixedExpense" class="text-xs font-bold text-amber-300">0원</span>
+          </div>
+          <div class="bg-white/5 rounded-xl py-2 px-1">
+            <span class="block text-[10px] text-slate-400 mb-0.5">대출 상환 (계좌)</span>
+            <span id="statLoanExpense" class="text-xs font-bold text-rose-300">0원</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Monthly Fixed Expenses Quick Bar -->
+      <section class="bg-indigo-50/60 border border-indigo-100 rounded-2xl p-3.5 space-y-2">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-1.5">
+            <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+            <span class="text-xs font-bold text-slate-700">이번 달 고정지출 (구독·통신·관리비)</span>
+            <span id="fixedCountBadge" class="text-[10px] bg-indigo-100 text-indigo-700 px-1.5 py-0.2 rounded-full font-bold">0건</span>
+          </div>
+          <button onclick="openRecurringModal()" class="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800">설정</button>
+        </div>
+        <div id="fixedExpenseQuickList" class="space-y-1.5 pt-1">
+          <div class="text-[11px] text-slate-400 text-center py-1">등록된 고정지출이 없습니다.</div>
+        </div>
+      </section>
+
+      <!-- Credit Card Horizontal Carousel -->
+      <section class="space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-extrabold text-slate-700">신용카드 4종 사용 현황</span>
+          <span class="text-[11px] text-slate-400">카드를 눌러 필터링</span>
+        </div>
+        <div id="cardSliderContainer" class="flex space-x-3 overflow-x-auto no-scrollbar py-1 px-0.5">
+          <!-- 4 Card Elements generated via JS -->
+        </div>
+      </section>
+
+      <!-- Filter Chips & Clear Action -->
+      <section class="space-y-2">
+        <div class="flex items-center justify-between">
+          <div id="filterChipBar" class="flex space-x-1.5 overflow-x-auto no-scrollbar py-1">
+            <!-- Filter items populated via JS -->
+          </div>
+          <button onclick="promptClearMonth()" title="이번 달 내역 전체 삭제" class="w-7 h-7 rounded-lg flex-shrink-0 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition ml-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- Transaction List Section -->
+      <section class="space-y-2">
+        <div class="flex items-center justify-between text-xs font-bold text-slate-600">
+          <span>지출 내역 목록</span>
+          <span id="filteredListCount" class="text-slate-400">총 0건</span>
+        </div>
+        <div id="transactionList" class="space-y-2.5">
+          <!-- Dynamically populated transaction cards -->
+        </div>
+      </section>
+    </main>
+
+    <main id="tabCalendarView" class="hidden p-4 space-y-4">
+      <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-100">
+        <!-- Calendar Legend -->
+        <div class="flex items-center justify-between text-[11px] pb-2 mb-2 border-b border-slate-100 font-medium">
+          <span class="text-slate-500 font-bold">월간 소비 캘린더</span>
+          <div class="flex items-center space-x-2 text-[10px]">
+            <span class="flex items-center space-x-1"><span class="w-2 h-2 rounded-full bg-rose-500"></span><span class="font-bold text-rose-600">대출 납부일</span></span>
+            <span class="flex items-center space-x-1"><span class="w-2 h-2 rounded-full bg-indigo-500"></span><span class="text-slate-500">일반 지출</span></span>
+          </div>
+        </div>
+        <!-- Weekday header -->
+        <div class="grid grid-cols-7 text-center text-xs font-bold text-slate-400 mb-2">
+          <span class="text-rose-500">일</span>
+          <span>월</span>
+          <span>화</span>
+          <span>수</span>
+          <span>목</span>
+          <span>금</span>
+          <span class="text-blue-500">토</span>
+        </div>
+        <!-- Calendar Days Grid -->
+        <div id="calendarDaysGrid" class="grid grid-cols-7 gap-1">
+          <!-- Injected via JavaScript -->
+        </div>
+      </div>
+
+      <!-- Selected Day Details Container -->
+      <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 space-y-3">
+        <!-- Loan notification banner if selected date is a loan pay day -->
+        <div id="calendarLoanAlertBox" class="hidden bg-rose-50 border border-rose-200 rounded-xl p-2.5 space-y-1">
+          <div class="flex items-center space-x-1.5 text-xs font-extrabold text-rose-700">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            <span>대출 원리금 납부일 (자동이체 계좌 확인)</span>
+          </div>
+          <div id="calendarLoanAlertDetails" class="text-[11px] text-rose-600 pl-5"></div>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
+            <h3 id="selectedDateTitle" class="text-xs font-extrabold text-slate-800">선택된 날짜</h3>
+          </div>
+          <span id="selectedDateTotal" class="text-xs font-black text-rose-600">0원</span>
+        </div>
+        <div id="selectedDateTransactions" class="space-y-2">
+          <!-- Daily items injected via JS -->
+        </div>
+      </div>
+    </main>
+
+    <main id="tabLoansView" class="hidden p-4 space-y-4">
+      <!-- Total Debt Hero Banner -->
+      <section class="bg-gradient-to-br from-indigo-900 via-slate-900 to-indigo-950 text-white rounded-3xl p-5 shadow-lg relative overflow-hidden">
+        <div class="flex items-center justify-between text-xs text-indigo-300 font-medium mb-1">
+          <span>남은 총 부채 잔액</span>
+          <span id="loanTotalCountBadge" class="bg-white/10 px-2 py-0.5 rounded-full text-[10px]">대출 0건</span>
+        </div>
+        <div class="flex items-baseline space-x-1 mb-3">
+          <span id="totalLoanBalanceAmount" class="text-3xl font-extrabold tracking-tight">0</span>
+          <span class="text-lg font-bold text-indigo-200">원</span>
+        </div>
+
+        <!-- Progress Bar for Total Repayment -->
+        <div class="space-y-1.5 pt-2 border-t border-white/10">
+          <div class="flex justify-between text-[11px] text-slate-300">
+            <span>총 상환 진행률</span>
+            <span id="totalLoanProgressPercent" class="font-bold text-emerald-300">0%</span>
+          </div>
+          <div class="w-full bg-white/20 rounded-full h-2 overflow-hidden">
+            <div id="totalLoanProgressBar" class="bg-emerald-400 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+          <div class="flex justify-between text-[10px] text-slate-400 pt-0.5">
+            <span id="totalInitialLoanAmount">최초 원금: 0원</span>
+            <span id="totalRepaidLoanAmount">상환 완료: 0원</span>
+          </div>
+        </div>
+
+        <!-- Monthly Repay Due (Bank account deduction) -->
+        <div class="mt-4 grid grid-cols-2 gap-2 text-center pt-3 border-t border-white/10">
+          <div class="bg-white/5 rounded-xl py-2 px-1">
+            <span class="block text-[10px] text-indigo-200">이번 달 계좌 출금 예정</span>
+            <span id="monthlyLoanTotalDue" class="text-xs font-bold text-white">0원</span>
+          </div>
+          <div class="bg-white/5 rounded-xl py-2 px-1">
+            <span class="block text-[10px] text-indigo-200">이번 달 이자 예상</span>
+            <span id="monthlyLoanInterestDue" class="text-xs font-bold text-amber-300">0원</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Active Loan List -->
+      <section class="space-y-2">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-1.5">
+            <span class="text-xs font-extrabold text-slate-700">관리 중인 대출 목록</span>
+            <span class="text-[10px] bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded font-bold">전용 계좌 출금</span>
+          </div>
+          <button onclick="openLoanModal()" class="text-xs font-bold text-indigo-600 hover:text-indigo-800">+ 대출 추가</button>
+        </div>
+        <div id="loanCardList" class="space-y-3">
+          <!-- Loan cards injected via JS -->
+        </div>
+      </section>
+    </main>
+
+    <!-- Bottom Floating Action Button (FAB) -->
+    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-md px-4 pointer-events-none z-30">
+      <button id="floatingActionButton" onclick="handleFabClick()" class="pointer-events-auto w-full py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl font-bold text-sm shadow-xl active:scale-[0.98] transition flex items-center justify-center space-x-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+        <span id="fabButtonLabel">새 지출 기록하기</span>
+      </button>
+    </div>
+
+    <!-- 1. Expense Entry Modal Sheet -->
+    <div id="expenseModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex flex-col justify-end hidden opacity-0 transition-opacity duration-200">
+      <div id="expenseSheetContent" class="modal-sheet closed w-full max-w-md mx-auto bg-white rounded-t-3xl p-5 max-h-[92vh] overflow-y-auto no-scrollbar shadow-2xl space-y-4">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+          <h3 class="font-extrabold text-base text-slate-800">지출 내역 기록</h3>
+          <button onclick="closeExpenseModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <form id="expenseForm" onsubmit="handleExpenseFormSubmit(event)" class="space-y-4">
+          <!-- Date Input -->
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">결제 일자</label>
+            <input type="date" id="inputExpDate" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
+
+          <!-- Amount Input & Quick Chips -->
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">결제 금액 (원)</label>
+            <div class="relative">
+              <input type="number" id="inputExpAmount" placeholder="0" min="1" required class="w-full pl-3.5 pr-8 py-2.5 rounded-xl border border-slate-200 text-lg font-black text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <span class="absolute right-3.5 top-3 text-xs font-bold text-slate-400">원</span>
+            </div>
+            <!-- Quick Chips -->
+            <div class="grid grid-cols-5 gap-1.5 mt-2">
+              <button type="button" onclick="addAmountToInput(1000)" class="py-1.5 rounded-lg bg-slate-100 text-xs font-bold text-slate-700 hover:bg-indigo-50 active:scale-95 transition">+1천</button>
+              <button type="button" onclick="addAmountToInput(5000)" class="py-1.5 rounded-lg bg-slate-100 text-xs font-bold text-slate-700 hover:bg-indigo-50 active:scale-95 transition">+5천</button>
+              <button type="button" onclick="addAmountToInput(10000)" class="py-1.5 rounded-lg bg-slate-100 text-xs font-bold text-slate-700 hover:bg-indigo-50 active:scale-95 transition">+1만</button>
+              <button type="button" onclick="addAmountToInput(50000)" class="py-1.5 rounded-lg bg-slate-100 text-xs font-bold text-slate-700 hover:bg-indigo-50 active:scale-95 transition">+5만</button>
+              <button type="button" onclick="clearAmountInput()" class="py-1.5 rounded-lg bg-rose-50 text-xs font-bold text-rose-600 hover:bg-rose-100 active:scale-95 transition">정정</button>
+            </div>
+          </div>
+
+          <!-- Payment Mode: One-time vs Installment -->
+          <div class="p-3 bg-slate-50 rounded-2xl space-y-2 border border-slate-200/60">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-700">결제 방식</span>
+              <div class="flex bg-slate-200 p-0.5 rounded-xl text-xs font-bold">
+                <button type="button" id="btnModeOnetime" onclick="setPaymentType('onetime')" class="px-3 py-1 rounded-lg bg-white text-indigo-600 shadow-sm transition">일시불</button>
+                <button type="button" id="btnModeInstallment" onclick="setPaymentType('installment')" class="px-3 py-1 rounded-lg text-slate-600 transition">할부</button>
+              </div>
+            </div>
+
+            <!-- Installment Months Dropdown -->
+            <div id="installmentConfigBox" class="hidden pt-2 border-t border-slate-200 space-y-1.5">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-600">할부 개월 수</span>
+                <select id="selectInstallmentMonths" onchange="calculateInstallmentPreview()" class="px-3 py-1.5 bg-white border border-slate-200 rounded-xl font-bold text-slate-800 text-xs focus:ring-2 focus:ring-indigo-500">
+                  <option value="2">2개월 할부</option>
+                  <option value="3" selected>3개월 할부</option>
+                  <option value="4">4개월 할부</option>
+                  <option value="5">5개월 할부</option>
+                  <option value="6">6개월 할부</option>
+                  <option value="10">10개월 할부</option>
+                  <option value="12">12개월 할부</option>
+                  <option value="18">18개월 할부</option>
+                  <option value="24">24개월 할부</option>
+                </select>
+              </div>
+              <p id="installmentPreviewNote" class="text-[11px] text-indigo-600 font-semibold text-right">매달 예상: 0원씩 분할 청구</p>
+            </div>
+          </div>
+
+          <!-- Credit Card Selector (4 Cards) -->
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">결제할 신용카드</label>
+            <div id="modalCardButtonGrid" class="grid grid-cols-2 gap-2"></div>
+          </div>
+
+          <!-- Category Selector -->
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">카테고리</label>
+            <div id="categoryGrid" class="grid grid-cols-4 gap-1.5"></div>
+          </div>
+
+          <!-- Merchant / Usage Details -->
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">사용처 (가맹점명 또는 내용)</label>
+            <input type="text" id="inputExpMerchant" placeholder="예: 스타벅스 강남점, 이마트 장보기" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
+
+          <!-- Fixed Expense Check & Recurring Auto Option -->
+          <div class="p-3 bg-indigo-50/70 border border-indigo-100 rounded-2xl space-y-2">
+            <div class="flex items-center justify-between">
+              <label for="checkIsFixed" class="text-xs font-bold text-slate-700 cursor-pointer">매달 나가는 고정지출</label>
+              <input type="checkbox" id="checkIsFixed" onchange="toggleFixedSubOption()" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500">
+            </div>
+            <div id="fixedAutoSubOption" class="hidden pt-1.5 border-t border-indigo-200/50 flex items-center justify-between">
+              <label for="checkAutoRecurring" class="text-[11px] text-slate-600 cursor-pointer">매월 이 날짜에 자동 등록</label>
+              <input type="checkbox" id="checkAutoRecurring" class="w-3.5 h-3.5 rounded text-indigo-600 focus:ring-indigo-500">
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="w-full py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 active:scale-[0.98] transition">
+            지출 저장하기
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 2. Safe Delete Confirmation Dialog -->
+    <div id="confirmDialog" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center px-4 hidden">
+      <div class="w-full max-w-xs bg-white rounded-3xl p-5 shadow-2xl space-y-3 text-center animate-in fade-in zoom-in-95 duration-150">
+        <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        </div>
+        <h4 id="confirmTitle" class="text-sm font-extrabold text-slate-800">지출 내역 삭제</h4>
+        <p id="confirmDesc" class="text-xs text-slate-600 whitespace-pre-line leading-relaxed">이 내역을 삭제하시겠습니까?<br><span class="text-[10px] text-emerald-600 font-bold">(구글 스프레드시트에서도 함께 삭제됩니다)</span></p>
+        <div class="grid grid-cols-2 gap-2 pt-2">
+          <button onclick="closeConfirmDialog()" class="py-2.5 rounded-xl bg-slate-100 text-xs font-bold text-slate-600 hover:bg-slate-200 active:scale-95 transition">취소</button>
+          <button id="btnExecuteConfirm" class="py-2.5 rounded-xl bg-rose-600 text-xs font-bold text-white hover:bg-rose-700 shadow-md shadow-rose-600/20 active:scale-95 transition">삭제하기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. New Loan Creation Modal with designated Bank Account field -->
+    <div id="loanModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex flex-col justify-end hidden opacity-0 transition-opacity duration-200">
+      <div id="loanSheetContent" class="modal-sheet closed w-full max-w-md mx-auto bg-white rounded-t-3xl p-5 max-h-[92vh] overflow-y-auto no-scrollbar shadow-2xl space-y-4">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+          <div>
+            <h3 class="font-extrabold text-base text-slate-800">대출 등록 및 계획</h3>
+            <span class="text-[11px] text-rose-600 font-bold">※ 대출 상환은 카드가 아닌 지정 계좌에서 자동 출금됩니다</span>
+          </div>
+          <button onclick="closeLoanModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <form id="loanForm" onsubmit="handleLoanFormSubmit(event)" class="space-y-3.5">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">대출 명칭</label>
+            <input type="text" id="inputLoanName" placeholder="예: 버팀목 전세자금대출, 카뱅 신용대출" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
+
+          <!-- Financial institution and Specific Withdrawal Bank Account -->
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">금융기관</label>
+              <input type="text" id="inputLoanBank" placeholder="예: 국민은행, 카카오뱅크" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">자동이체 출금계좌</label>
+              <input type="text" id="inputLoanAccount" placeholder="예: 국민 123-456-789" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">연 이자율 (%)</label>
+              <input type="number" id="inputLoanRate" step="0.01" min="0" placeholder="예: 4.5" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">매월 납입일 (달력 빨간표시)</label>
+              <select id="selectLoanPayDay" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <!-- 1 to 31 injected via script -->
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">최초 원금 (원)</label>
+              <input type="number" id="inputLoanOriginal" placeholder="예: 50000000" min="10000" required class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">현재 남은 잔액 (원)</label>
+              <input type="number" id="inputLoanBalance" placeholder="예: 45000000" min="0" required class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">상환 방식</label>
+              <select id="selectLoanType" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="equal_principal_interest">원리금 균등상환</option>
+                <option value="equal_principal">원금 균등상환</option>
+                <option value="bullet">만기 일시상환</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">총 기간 (개월)</label>
+              <input type="number" id="inputLoanTermMonths" placeholder="예: 120" min="1" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+          </div>
+
+          <div class="flex items-center space-x-2 pt-1">
+            <input type="checkbox" id="checkLoanAutoSync" checked class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500">
+            <label for="checkLoanAutoSync" class="text-xs font-bold text-slate-700 cursor-pointer">매월 가계부 지출에 계좌 출금액 자동 포함</label>
+          </div>
+
+          <button type="submit" class="w-full py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 active:scale-[0.98] transition">
+            대출 정보 저장하기
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 4. Loan Repayment Execution Modal with specific account indicator -->
+    <div id="loanRepayModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center px-4 hidden">
+      <div class="w-full max-w-sm bg-white rounded-3xl p-5 shadow-2xl space-y-4">
+        <div class="flex items-center justify-between pb-1 border-b border-slate-100">
+          <div>
+            <h4 id="repayModalLoanTitle" class="text-sm font-extrabold text-slate-800">대출 상환 기록</h4>
+            <span id="repayModalAccountBadge" class="text-[10px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full font-bold">계좌 출금</span>
+          </div>
+          <button onclick="closeLoanRepayModal()" class="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <p class="text-xs text-slate-500 leading-relaxed">
+          상환한 원금과 이자를 기록하면 대출 잔액이 차감되고, 가계부 지출에도 <span class="font-bold text-indigo-600">지정 계좌 출금</span>으로 분리 기록됩니다.
+        </p>
+        
+        <form id="loanRepayForm" onsubmit="handleRepaySubmit(event)" class="space-y-3">
+          <input type="hidden" id="repayLoanId">
+          <div>
+            <label class="block text-[11px] font-bold text-slate-600 mb-1">상환(출금) 일자</label>
+            <input type="date" id="inputRepayDate" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-600 mb-1">갚은 원금 (원)</label>
+            <input type="number" id="inputRepayPrincipal" min="0" placeholder="0" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm font-bold text-indigo-600">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-600 mb-1">납입한 이자 (원)</label>
+            <input type="number" id="inputRepayInterest" min="0" placeholder="0" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm font-bold text-amber-600">
+          </div>
+          <button type="submit" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/30 active:scale-95 transition">
+            계좌 상환 완료 & 잔액 차감
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 5. Card 4-Settings Modal (Names & Color Theme) -->
+    <div id="cardSettingsModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex flex-col justify-end hidden opacity-0 transition-opacity duration-200">
+      <div id="cardSheetContent" class="modal-sheet closed w-full max-w-md mx-auto bg-white rounded-t-3xl p-5 max-h-[90vh] overflow-y-auto no-scrollbar shadow-2xl space-y-4">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+          <h3 class="font-extrabold text-base text-slate-800">신용카드 4종 설정</h3>
+          <button onclick="closeCardSettingsModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <p class="text-xs text-slate-500">기본 순서는 삼성 ➔ 현대 ➔ 신한 ➔ 국민입니다. 각 카드의 이름과 테마 색상을 취향에 맞게 바꿔보세요.</p>
+        <div id="cardSettingsList" class="space-y-4"></div>
+        <button onclick="saveCardSettings()" class="w-full py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 active:scale-[0.98] transition">
+          카드 설정 저장하기
+        </button>
+      </div>
+    </div>
+
+    <!-- 6. Google Sheets Realtime Webhook Modal -->
+    <div id="sheetModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center px-4 hidden">
+      <div class="w-full max-w-sm bg-white rounded-3xl p-5 shadow-2xl space-y-3.5">
+        <div class="flex items-center justify-between pb-1 border-b border-slate-100">
+          <div class="flex items-center space-x-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <h4 class="text-sm font-extrabold text-slate-800">구글 시트 실시간 연동</h4>
+          </div>
+          <button onclick="closeGoogleSheetModal()" class="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <p class="text-xs text-slate-600 leading-relaxed">
+          지출을 등록하면 <span class="font-bold text-emerald-600">실시간 추가</span>되고, 앱에서 내역을 삭제하면 <span class="font-bold text-rose-600">구글 시트에서도 자동 삭제</span>됩니다.
+        </p>
+        <div>
+          <label class="block text-[11px] font-bold text-slate-600 mb-1">배포된 Apps Script 웹 앱 URL</label>
+          <input type="text" id="inputWebhookUrl" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+        </div>
+        <div class="flex space-x-2">
+          <button onclick="saveGoogleSheetUrl()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 shadow-md shadow-emerald-600/20 active:scale-95 transition">URL 저장</button>
+          <button onclick="testGoogleSheetSync()" class="px-3 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200 active:scale-95 transition">연동 테스트</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. Recurring Fixed Expense Manager Modal -->
+    <div id="recurringModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex flex-col justify-end hidden opacity-0 transition-opacity duration-200">
+      <div id="recurringSheetContent" class="modal-sheet closed w-full max-w-md mx-auto bg-white rounded-t-3xl p-5 max-h-[90vh] overflow-y-auto no-scrollbar shadow-2xl space-y-4">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+          <h3 class="font-extrabold text-base text-slate-800">매달 고정지출 템플릿</h3>
+          <button onclick="closeRecurringModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <p class="text-xs text-slate-500">등록해두면 매월 결제일에 자동으로 가계부에 기록되며 중복 등록되지 않습니다.</p>
+        <div id="recurringItemList" class="space-y-2"></div>
+        <div class="pt-2 flex space-x-2">
+          <button onclick="applyRecurringToCurrentMonth()" class="flex-1 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20 active:scale-95 transition">
+            이번 달 즉시 일괄 적용
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. Year/Month Selection Modal -->
+    <div id="monthPickerModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center px-4 hidden">
+      <div class="w-full max-w-xs bg-white rounded-3xl p-5 shadow-2xl space-y-4 text-center">
+        <h4 class="text-sm font-extrabold text-slate-800">조회할 년월 선택</h4>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 mb-1">연도</label>
+            <select id="pickerSelectYear" class="w-full px-2 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-800">
+              <option value="2025">2025년</option>
+              <option value="2026" selected>2026년</option>
+              <option value="2027">2027년</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 mb-1">월</label>
+            <select id="pickerSelectMonth" class="w-full px-2 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-800"></select>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2 pt-2">
+          <button onclick="closeMonthPickerModal()" class="py-2.5 rounded-xl bg-slate-100 text-xs font-bold text-slate-600 hover:bg-slate-200">취소</button>
+          <button onclick="applyPickedMonth()" class="py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700">이동하기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification Message Box -->
+    <div id="toast" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 bg-slate-900/90 text-white text-xs font-bold px-4 py-2.5 rounded-2xl shadow-xl transition-all duration-300 opacity-0 pointer-events-none translate-y-3">
+      알림 메시지
+    </div>
+
+  </div>
+
+  <script>
+    /* =========================================================
+       1. DATA MODELS & CONSTANTS
+       ========================================================= */
+    const APP_PIN_CODE = '1017'; // 지정 비밀번호 1017
+    let enteredPin = '';
+    let isAppUnlocked = false;
+
+    const DEFAULT_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwAsVuHiP6BToJwL6C5j0m7pMSAqeu-MC96uYNt5xODkH0J0klnDGOXmQNVZLn4Pft2/exec';
+
+    // Safe in-memory fallback for sandboxed iframes
+    const memoryStore = {};
+    const safeStorage = {
+      get(key, fallback = null) {
+        try {
+          const val = localStorage.getItem(key);
+          return val !== null ? val : fallback;
+        } catch (e) {
+          return memoryStore[key] !== undefined ? memoryStore[key] : fallback;
+        }
+      },
+      set(key, value) {
+        try {
+          localStorage.setItem(key, value);
+        } catch (e) {
+          memoryStore[key] = String(value);
+        }
+      }
+    };
+
+    // Card Color Presets
+    const CARD_COLOR_PRESETS = [
+      { id: 'violet', name: '바이올렛 (삼성)', class: 'from-violet-600 to-indigo-700', badgeClass: 'bg-violet-100 text-violet-700' },
+      { id: 'sky', name: '스카이블루 (현대)', class: 'from-sky-500 to-blue-600', badgeClass: 'bg-sky-100 text-sky-700' },
+      { id: 'mint', name: '민트그린 (신한)', class: 'from-emerald-500 to-teal-700', badgeClass: 'bg-emerald-100 text-emerald-700' },
+      { id: 'gold', name: '골드옐로우 (국민)', class: 'from-amber-500 to-yellow-600', badgeClass: 'bg-amber-100 text-amber-800' },
+      { id: 'rose', name: '로즈핑크', class: 'from-rose-500 to-pink-600', badgeClass: 'bg-rose-100 text-rose-700' },
+      { id: 'dark', name: '매트블랙', class: 'from-slate-800 to-slate-950', badgeClass: 'bg-slate-100 text-slate-800' },
+      { id: 'orange', name: '오렌지레드', class: 'from-orange-500 to-amber-600', badgeClass: 'bg-orange-100 text-orange-800' },
+      { id: 'navy', name: '딥네이비', class: 'from-blue-900 to-slate-900', badgeClass: 'bg-blue-100 text-blue-800' }
+    ];
+
+    // Categories
+    const CATEGORIES = [
+      { id: 'food', name: '식비', icon: '🍽️', bg: 'bg-orange-50 text-orange-600' },
+      { id: 'cafe', name: '카페/간식', icon: '☕', bg: 'bg-amber-50 text-amber-600' },
+      { id: 'shopping', name: '쇼핑/마트', icon: '🛍️', bg: 'bg-pink-50 text-pink-600' },
+      { id: 'living', name: '생활/공과금', icon: '🏠', bg: 'bg-emerald-50 text-emerald-600' },
+      { id: 'transport', name: '교통/차량', icon: '🚗', bg: 'bg-blue-50 text-blue-600' },
+      { id: 'culture', name: '문화/취미', icon: '🎮', bg: 'bg-purple-50 text-purple-600' },
+      { id: 'health', name: '의료/건강', icon: '💊', bg: 'bg-rose-50 text-rose-600' },
+      { id: 'etc', name: '기타/이체', icon: '💡', bg: 'bg-slate-100 text-slate-600' }
+    ];
+
+    let currentYear = 2026;
+    let currentMonth = 10;
+    let currentTab = 'transactions';
+    let currentFilter = 'all';
+    let selectedCalendarDate = '2026-10-02';
+
+    let cards = [
+      { id: 'card_samsung', name: '삼성카드', colorTheme: 'violet' },
+      { id: 'card_hyundai', name: '현대카드', colorTheme: 'sky' },
+      { id: 'card_shinhan', name: '신한카드', colorTheme: 'mint' },
+      { id: 'card_kookmin', name: 'KB국민카드', colorTheme: 'gold' }
+    ];
+
+    let transactions = [];
+    let loans = [];
+    let recurringTemplates = [];
+    let googleSheetWebhookUrl = DEFAULT_WEBHOOK_URL;
+    let currentExpensePaymentType = 'onetime';
+    let selectedExpenseCardId = 'card_samsung';
+    let selectedExpenseCategory = 'food';
+    let pendingConfirmAction = null;
+
+    // PIN Lock Functions
+    function pressPinKey(num) {
+      if (enteredPin.length >= 4) return;
+      playTapSound('E5');
+      enteredPin += num;
+      updatePinDots();
+
+      if (enteredPin.length === 4) {
+        setTimeout(verifyEnteredPin, 100);
+      }
+    }
+
+    function deletePinLast() {
+      playTapSound('D4');
+      if (enteredPin.length > 0) {
+        enteredPin = enteredPin.slice(0, -1);
+        updatePinDots();
+      }
+    }
+
+    function resetPinInput() {
+      playTapSound('C4');
+      enteredPin = '';
+      updatePinDots();
+    }
+
+    function updatePinDots() {
+      for (let i = 0; i < 4; i++) {
+        const dot = document.getElementById(`pinDot${i}`);
+        if (!dot) continue;
+        if (i < enteredPin.length) {
+          dot.className = 'w-3.5 h-3.5 rounded-full bg-indigo-500 border-2 border-indigo-400 scale-110 transition-all duration-200';
+        } else {
+          dot.className = 'w-3.5 h-3.5 rounded-full border-2 border-slate-600 transition-all duration-200';
+        }
+      }
+    }
+
+    function verifyEnteredPin() {
+      const lockScreen = document.getElementById('lockScreen');
+      const dotsContainer = document.getElementById('pinDotsContainer');
+      const subText = document.getElementById('lockScreenSubText');
+
+      if (enteredPin === APP_PIN_CODE) {
+        playTapSound('C6');
+        isAppUnlocked = true;
+        lockScreen.classList.add('opacity-0', 'pointer-events-none');
+        setTimeout(() => {
+          lockScreen.classList.add('hidden');
+        }, 320);
+        showToast('잠금이 해제되었습니다.');
+      } else {
+        playTapSound('A3');
+        dotsContainer.classList.add('shake-animation');
+        subText.textContent = '비밀번호가 올바르지 않습니다 (다시 입력)';
+        subText.className = 'text-xs text-rose-400 mt-1 font-bold';
+        setTimeout(() => {
+          dotsContainer.classList.remove('shake-animation');
+          resetPinInput();
+        }, 400);
+      }
+    }
+
+    function lockAppManually() {
+      playTapSound('C4');
+      isAppUnlocked = false;
+      resetPinInput();
+      const lockScreen = document.getElementById('lockScreen');
+      const subText = document.getElementById('lockScreenSubText');
+      subText.textContent = '보안을 위해 4자리 비밀번호를 입력해주세요';
+      subText.className = 'text-xs text-slate-400 mt-1 font-medium';
+      lockScreen.classList.remove('hidden');
+      setTimeout(() => {
+        lockScreen.classList.remove('opacity-0', 'pointer-events-none');
+      }, 10);
+    }
+
+    function loadSavedState() {
+      try {
+        const savedCards = safeStorage.get('my_cards_v3');
+        if (savedCards) cards = JSON.parse(savedCards);
+
+        const savedTxs = safeStorage.get('my_transactions_v3');
+        if (savedTxs) transactions = JSON.parse(savedTxs);
+
+        const savedLoans = safeStorage.get('my_loans_v3');
+        if (savedLoans) loans = JSON.parse(savedLoans);
+
+        const savedRec = safeStorage.get('my_recurring_v3');
+        if (savedRec) recurringTemplates = JSON.parse(savedRec);
+
+        const savedUrl = safeStorage.get('my_sheet_webhook_url');
+        if (savedUrl) googleSheetWebhookUrl = savedUrl;
+        else googleSheetWebhookUrl = DEFAULT_WEBHOOK_URL;
+      } catch (e) {
+        console.error("Storage loading fallback:", e);
+      }
+
+      if (!recurringTemplates || recurringTemplates.length === 0) {
+        recurringTemplates = [
+          { id: 'rec_1', name: '넷플릭스 구독', cardId: 'card_samsung', amount: 17000, day: 5, category: 'culture' },
+          { id: 'rec_2', name: '통신비 요금', cardId: 'card_samsung', amount: 55000, day: 25, category: 'living' }
+        ];
+        saveRecurring();
+      }
+    }
+
+    function saveTransactions() {
+      safeStorage.set('my_transactions_v3', JSON.stringify(transactions));
+    }
+    function saveCards() {
+      safeStorage.set('my_cards_v3', JSON.stringify(cards));
+    }
+    function saveLoans() {
+      safeStorage.set('my_loans_v3', JSON.stringify(loans));
+    }
+    function saveRecurring() {
+      safeStorage.set('my_recurring_v3', JSON.stringify(recurringTemplates));
+    }
+
+    function syncAddGoogleSheet(item) {
+      if (!googleSheetWebhookUrl) return;
+      try {
+        const payload = Object.assign({ action: 'ADD' }, item);
+        fetch(googleSheetWebhookUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }).then(() => {
+          showToast('구글 스프레드시트에 저장되었습니다.');
+        }).catch(err => console.error("Sheet Sync Err:", err));
+      } catch (e) {
+        console.error("Sheet sync error:", e);
+      }
+    }
+
+    function syncDeleteGoogleSheet(item) {
+      if (!googleSheetWebhookUrl || !item) return;
+      try {
+        fetch(googleSheetWebhookUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'DELETE',
+            id: item.id,
+            date: item.date,
+            merchant: item.merchant,
+            amount: item.amount
+          })
+        }).then(() => {
+          showToast('구글 시트에서도 삭제되었습니다.');
+        }).catch(err => console.error("Sheet Delete Err:", err));
+      } catch (e) {
+        console.error("Sheet delete error:", e);
+      }
+    }
+
+    let synth = null;
+    function playTapSound(note = 'C5') {
+      try {
+        if (!synth && window.Tone) {
+          synth = new Tone.Synth({
+            oscillator: { type: 'sine' },
+            envelope: { attack: 0.005, decay: 0.08, sustain: 0, release: 0.08 }
+          }).toDestination();
+          synth.volume.value = -18;
+        }
+        if (Tone && Tone.context && Tone.context.state !== 'running') {
+          Tone.start();
+        }
+        if (synth) synth.triggerAttackRelease(note, '32n');
+      } catch (e) {}
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      if (!toast) return;
+      toast.textContent = msg;
+      toast.classList.remove('opacity-0', 'translate-y-3');
+      toast.classList.add('opacity-100', 'translate-y-0');
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-3');
+        toast.classList.remove('opacity-100', 'translate-y-0');
+      }, 2400);
+    }
+
+    function switchMainTab(tab) {
+      currentTab = tab;
+      playTapSound('E5');
+
+      const btnTx = document.getElementById('tabBtnTransactions');
+      const btnCal = document.getElementById('tabBtnCalendar');
+      const btnLoans = document.getElementById('tabBtnLoans');
+
+      const viewTx = document.getElementById('tabTransactionsView');
+      const viewCal = document.getElementById('tabCalendarView');
+      const viewLoans = document.getElementById('tabLoansView');
+      const fabLabel = document.getElementById('fabButtonLabel');
+
+      [btnTx, btnCal, btnLoans].forEach(btn => {
+        btn.className = 'py-2 text-xs font-bold rounded-xl transition flex flex-col items-center justify-center text-slate-500 hover:bg-slate-50';
+      });
+
+      viewTx.classList.add('hidden');
+      viewCal.classList.add('hidden');
+      viewLoans.classList.add('hidden');
+
+      if (tab === 'transactions') {
+        btnTx.className = 'py-2 text-xs font-bold rounded-xl transition flex flex-col items-center justify-center bg-indigo-50 text-indigo-600';
+        viewTx.classList.remove('hidden');
+        fabLabel.textContent = '새 지출 기록하기';
+      } else if (tab === 'calendar') {
+        btnCal.className = 'py-2 text-xs font-bold rounded-xl transition flex flex-col items-center justify-center bg-indigo-50 text-indigo-600';
+        viewCal.classList.remove('hidden');
+        fabLabel.textContent = '선택 일자에 지출 기록';
+        renderCalendar();
+      } else if (tab === 'loans') {
+        btnLoans.className = 'py-2 text-xs font-bold rounded-xl transition flex flex-col items-center justify-center bg-indigo-50 text-indigo-600';
+        viewLoans.classList.remove('hidden');
+        fabLabel.textContent = '+ 새 대출 등록하기';
+        renderLoanView();
+      }
+    }
+
+    function handleFabClick() {
+      playTapSound('G5');
+      if (currentTab === 'loans') {
+        openLoanModal();
+      } else if (currentTab === 'calendar') {
+        openExpenseModal(selectedCalendarDate);
+      } else {
+        openExpenseModal();
+      }
+    }
+
+    function changeMonth(delta) {
+      playTapSound('C5');
+      currentMonth += delta;
+      if (currentMonth > 12) {
+        currentMonth = 1;
+        currentYear += 1;
+      } else if (currentMonth < 1) {
+        currentMonth = 12;
+        currentYear -= 1;
+      }
+      autoApplyRecurringForMonth(currentYear, currentMonth);
+      refreshApp();
+    }
+
+    function refreshApp() {
+      document.getElementById('currentMonthLabel').textContent = `${currentYear}년 ${currentMonth}월`;
+      renderDashboard();
+      renderCardSlider();
+      renderFilterChips();
+      renderTransactionList();
+      if (currentTab === 'calendar') renderCalendar();
+      if (currentTab === 'loans') renderLoanView();
+    }
+
+    function autoApplyRecurringForMonth(year, month) {
+      if (!recurringTemplates || recurringTemplates.length === 0) return;
+      const monthPrefix = `${year}-${String(month).padStart(2, '0')}`;
+      let addedCount = 0;
+
+      recurringTemplates.forEach(rec => {
+        const exists = transactions.some(t => t.recurringId === rec.id && t.date && t.date.startsWith(monthPrefix));
+        if (!exists) {
+          const dayStr = String(Math.min(rec.day || 1, 28)).padStart(2, '0');
+          const dateStr = `${monthPrefix}-${dayStr}`;
+          const card = cards.find(c => c.id === rec.cardId) || cards[0];
+          const cat = CATEGORIES.find(c => c.id === rec.category) || CATEGORIES[3];
+
+          const newTx = {
+            id: 'tx_rec_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+            date: dateStr,
+            amount: Number(rec.amount),
+            merchant: rec.name,
+            cardId: card.id,
+            cardName: card.name,
+            category: cat.id,
+            categoryName: cat.name,
+            isFixed: true,
+            isInstallment: false,
+            recurringId: rec.id
+          };
+          transactions.unshift(newTx);
+          syncAddGoogleSheet(newTx);
+          addedCount++;
+        }
+      });
+
+      if (addedCount > 0) {
+        saveTransactions();
+        showToast(`${month}월 고정지출 ${addedCount}건 자동 등록됨`);
+      }
+    }
+
+    function getMonthTransactions() {
+      const monthPrefix = `${currentYear}-${String(currentMonth).padStart(2, '0')}`;
+      return transactions.filter(t => t.date && t.date.startsWith(monthPrefix));
+    }
+
+    function renderDashboard() {
+      const monthTxs = getMonthTransactions();
+      let total = 0;
+      let variable = 0;
+      let fixed = 0;
+      let loan = 0;
+
+      monthTxs.forEach(t => {
+        const amt = Number(t.amount) || 0;
+        total += amt;
+        if (t.isLoan) loan += amt;
+        else if (t.isFixed) fixed += amt;
+        else variable += amt;
+      });
+
+      document.getElementById('statTotalExpense').textContent = total.toLocaleString('ko-KR');
+      document.getElementById('statVariableExpense').textContent = variable.toLocaleString('ko-KR') + '원';
+      document.getElementById('statFixedExpense').textContent = fixed.toLocaleString('ko-KR') + '원';
+      document.getElementById('statLoanExpense').textContent = loan.toLocaleString('ko-KR') + '원';
+
+      // Fixed quick bar
+      const fixedTxs = monthTxs.filter(t => t.isFixed);
+      document.getElementById('fixedCountBadge').textContent = `${fixedTxs.length}건`;
+      const quickContainer = document.getElementById('fixedExpenseQuickList');
+      if (fixedTxs.length === 0) {
+        quickContainer.innerHTML = '<div class="text-[11px] text-slate-400 text-center py-1">등록된 고정지출이 없습니다.</div>';
+      } else {
+        quickContainer.innerHTML = fixedTxs.map(t => {
+          return `
+            <div class="flex items-center justify-between text-xs py-1 px-2.5 bg-white rounded-xl shadow-xs border border-indigo-100/60">
+              <div class="flex items-center space-x-1.5">
+                <span class="font-bold text-slate-800">${escapeHtml(t.merchant)}</span>
+                ${t.recurringId ? '<span class="text-[9px] bg-indigo-100 text-indigo-700 px-1 rounded font-bold">자동</span>' : ''}
+                <span class="text-[10px] text-slate-400 font-medium">${escapeHtml(t.cardName || '')}</span>
+              </div>
+              <span class="font-extrabold text-indigo-700">-${t.amount.toLocaleString('ko-KR')}원</span>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    function renderCardSlider() {
+      const monthTxs = getMonthTransactions();
+      const container = document.getElementById('cardSliderContainer');
+      container.innerHTML = cards.map(c => {
+        const cTheme = CARD_COLOR_PRESETS.find(p => p.id === c.colorTheme) || CARD_COLOR_PRESETS[0];
+        const cardTxs = monthTxs.filter(t => t.cardId === c.id);
+        const cardSum = cardTxs.reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
+        const isSelected = currentFilter === c.id;
+
+        return `
+          <div onclick="selectFilterCard('${c.id}')" class="flex-shrink-0 w-44 rounded-2xl p-3.5 bg-gradient-to-br ${cTheme.class} text-white shadow-md cursor-pointer transition active:scale-95 ${isSelected ? 'ring-2 ring-indigo-500 ring-offset-2' : ''}">
+            <div class="flex items-center justify-between text-[11px] font-bold opacity-90 mb-2">
+              <span class="truncate">${escapeHtml(c.name)}</span>
+              <span class="text-[9px] bg-white/20 px-1.5 py-0.5 rounded font-bold">CARD</span>
+            </div>
+            <div class="text-[10px] text-white/70">이번 달 사용</div>
+            <div class="text-base font-extrabold tracking-tight mb-2">${cardSum.toLocaleString('ko-KR')}원</div>
+            <div class="text-[10px] text-white/80 text-right font-medium">${cardTxs.length}건 결제</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderFilterChips() {
+      const container = document.getElementById('filterChipBar');
+      let chipsHtml = `
+        <button onclick="setFilter('all')" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition ${currentFilter === 'all' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">전체 보기</button>
+        <button onclick="setFilter('fixed')" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition ${currentFilter === 'fixed' ? 'bg-indigo-600 text-white' : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100'}">고정지출</button>
+        <button onclick="setFilter('installment')" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition ${currentFilter === 'installment' ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-700 hover:bg-blue-100'}">할부</button>
+        <button onclick="setFilter('loan')" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition ${currentFilter === 'loan' ? 'bg-rose-600 text-white' : 'bg-rose-50 text-rose-700 hover:bg-rose-100'}">대출상환(계좌)</button>
+      `;
+
+      cards.forEach(c => {
+        const cTheme = CARD_COLOR_PRESETS.find(p => p.id === c.colorTheme) || CARD_COLOR_PRESETS[0];
+        const isSelected = currentFilter === c.id;
+        chipsHtml += `
+          <button onclick="setFilter('${c.id}')" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 ${isSelected ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}">
+            <span class="w-2 h-2 rounded-full bg-gradient-to-r ${cTheme.class}"></span>
+            <span>${escapeHtml(c.name)}</span>
+          </button>
+        `;
+      });
+
+      container.innerHTML = chipsHtml;
+    }
+
+    function setFilter(filter) {
+      playTapSound('D5');
+      currentFilter = filter;
+      renderCardSlider();
+      renderFilterChips();
+      renderTransactionList();
+    }
+
+    function selectFilterCard(cardId) {
+      if (currentFilter === cardId) setFilter('all');
+      else setFilter(cardId);
+    }
+
+    function renderTransactionList() {
+      const monthTxs = getMonthTransactions();
+      let filtered = monthTxs;
+
+      if (currentFilter === 'fixed') {
+        filtered = monthTxs.filter(t => t.isFixed);
+      } else if (currentFilter === 'installment') {
+        filtered = monthTxs.filter(t => t.isInstallment);
+      } else if (currentFilter === 'loan') {
+        filtered = monthTxs.filter(t => t.isLoan);
+      } else if (currentFilter !== 'all') {
+        filtered = monthTxs.filter(t => t.cardId === currentFilter);
+      }
+
+      filtered.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+      document.getElementById('filteredListCount').textContent = `총 ${filtered.length}건`;
+      const container = document.getElementById('transactionList');
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="py-12 text-center text-slate-400 space-y-2">
+            <div class="w-12 h-12 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-slate-300">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+            </div>
+            <p class="text-xs font-semibold">지출 내역이 없습니다</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(item => {
+        const cat = CATEGORIES.find(c => c.id === item.category) || CATEGORIES[7];
+        const card = cards.find(c => c.id === item.cardId);
+        const cTheme = card ? (CARD_COLOR_PRESETS.find(p => p.id === card.colorTheme) || CARD_COLOR_PRESETS[0]) : null;
+
+        let badgesHtml = '';
+        if (item.isLoan) {
+          badgesHtml += '<span class="bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded text-[10px] font-bold">계좌상환</span>';
+        } else if (item.isInstallment) {
+          badgesHtml += `<span class="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded text-[10px] font-bold">할부 ${item.installmentCurrent}/${item.installmentMonths}</span>`;
+        } else if (item.isFixed) {
+          badgesHtml += '<span class="bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded text-[10px] font-bold">고정</span>';
+          if (item.recurringId) {
+            badgesHtml += '<span class="bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded text-[10px] font-bold">자동</span>';
+          }
+        }
+
+        // Account badge for loans, Card badge for card purchases
+        let paymentBadge = '';
+        if (item.isLoan) {
+          paymentBadge = `<span class="bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded text-[10px] font-bold">🏦 ${escapeHtml(item.cardName || '계좌출금')}</span>`;
+        } else if (cTheme && card) {
+          paymentBadge = `<span class="${cTheme.badgeClass} px-1.5 py-0.5 rounded text-[10px] font-bold">${escapeHtml(card.name)}</span>`;
+        } else if (item.cardName) {
+          paymentBadge = `<span class="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded text-[10px] font-bold">${escapeHtml(item.cardName)}</span>`;
+        }
+
+        return `
+          <div class="bg-white rounded-2xl p-3 border border-slate-100 shadow-sm flex items-center justify-between hover:border-slate-200 transition">
+            <div class="flex items-center space-x-3 overflow-hidden">
+              <div class="w-10 h-10 rounded-2xl ${cat.bg} flex items-center justify-center text-lg flex-shrink-0">
+                ${cat.icon}
+              </div>
+              <div class="truncate">
+                <div class="flex items-center space-x-1.5 mb-0.5">
+                  <span class="font-extrabold text-sm text-slate-800 truncate">${escapeHtml(item.merchant)}</span>
+                  ${badgesHtml}
+                </div>
+                <div class="flex items-center space-x-1.5 text-[11px] text-slate-400 font-medium">
+                  ${paymentBadge}
+                  <span>${item.date || ''}</span>
+                  <span>·</span>
+                  <span>${escapeHtml(item.categoryName || cat.name)}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center space-x-2 flex-shrink-0 ml-2">
+              <span class="font-extrabold text-sm text-slate-900 tracking-tight">-${Number(item.amount).toLocaleString('ko-KR')}원</span>
+              <button onclick="promptDeleteTransaction('${item.id}')" title="삭제" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-300 hover:text-rose-600 hover:bg-rose-50 transition active:scale-90">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function promptDeleteTransaction(id) {
+      playTapSound('D4');
+      const item = transactions.find(t => t.id === id);
+      if (!item) return;
+
+      document.getElementById('confirmTitle').textContent = '지출 내역 삭제';
+      document.getElementById('confirmDesc').innerHTML = `<strong>[${escapeHtml(item.merchant)}]</strong> ${Number(item.amount).toLocaleString('ko-KR')}원<br>이 내역을 삭제하시겠습니까?<br><span class="text-[10px] text-emerald-600 font-bold">(구글 스프레드시트에서도 함께 삭제됩니다)</span>`;
+      
+      const dialog = document.getElementById('confirmDialog');
+      dialog.classList.remove('hidden');
+
+      pendingConfirmAction = () => {
+        transactions = transactions.filter(t => t.id !== id);
+        saveTransactions();
+        refreshApp();
+        syncDeleteGoogleSheet(item);
+        showToast('내역이 삭제되었습니다.');
+      };
+    }
+
+    function promptClearMonth() {
+      playTapSound('D4');
+      const monthTxs = getMonthTransactions();
+      if (monthTxs.length === 0) {
+        showToast(`${currentMonth}월에 삭제할 내역이 없습니다.`);
+        return;
+      }
+
+      document.getElementById('confirmTitle').textContent = `${currentMonth}월 전체 내역 삭제`;
+      document.getElementById('confirmDesc').innerHTML = `${currentYear}년 ${currentMonth}월의 모든 내역(${monthTxs.length}건)을 전부 삭제하시겠습니까?<br><span class="text-[10px] text-emerald-600 font-bold">(구글 시트에서도 순차 삭제됩니다)</span>`;
+      
+      const dialog = document.getElementById('confirmDialog');
+      dialog.classList.remove('hidden');
+
+      pendingConfirmAction = () => {
+        const monthPrefix = `${currentYear}-${String(currentMonth).padStart(2, '0')}`;
+        const toDeleteList = transactions.filter(t => t.date && t.date.startsWith(monthPrefix));
+        transactions = transactions.filter(t => !t.date || !t.date.startsWith(monthPrefix));
+        saveTransactions();
+        refreshApp();
+
+        toDeleteList.forEach((tx, idx) => {
+          setTimeout(() => syncDeleteGoogleSheet(tx), idx * 250);
+        });
+        showToast(`${currentMonth}월 내역이 삭제되었습니다.`);
+      };
+    }
+
+    function closeConfirmDialog() {
+      document.getElementById('confirmDialog').classList.add('hidden');
+      pendingConfirmAction = null;
+    }
+
+    document.getElementById('btnExecuteConfirm').addEventListener('click', () => {
+      if (pendingConfirmAction) pendingConfirmAction();
+      closeConfirmDialog();
+    });
+
+    function renderCalendar() {
+      const grid = document.getElementById('calendarDaysGrid');
+      const monthPrefix = `${currentYear}-${String(currentMonth).padStart(2, '0')}`;
+      const firstDayIndex = new Date(currentYear, currentMonth - 1, 1).getDay();
+      const totalDays = new Date(currentYear, currentMonth, 0).getDate();
+
+      // Aggregate daily sums
+      const dailySums = {};
+      transactions.forEach(t => {
+        if (t.date && t.date.startsWith(monthPrefix)) {
+          dailySums[t.date] = (dailySums[t.date] || 0) + (Number(t.amount) || 0);
+        }
+      });
+
+      // Find loan pay days
+      const loanPayDays = {};
+      loans.forEach(l => {
+        const pDay = Number(l.payDay) || 25;
+        if (!loanPayDays[pDay]) loanPayDays[pDay] = [];
+        loanPayDays[pDay].push(l);
+      });
+
+      let daysHtml = '';
+      for (let i = 0; i < firstDayIndex; i++) {
+        daysHtml += '<div class="h-14 rounded-xl bg-slate-50/50"></div>';
+      }
+
+      for (let day = 1; day <= totalDays; day++) {
+        const dateStr = `${monthPrefix}-${String(day).padStart(2, '0')}`;
+        const sum = dailySums[dateStr] || 0;
+        const isSelected = selectedCalendarDate === dateStr;
+        const isLoanDay = !!loanPayDays[day];
+
+        let badgeStr = '';
+        if (sum > 0) {
+          const displaySum = sum >= 10000 ? (Math.round(sum / 1000) / 10) + '만' : (Math.round(sum / 100) / 10) + '천';
+          badgeStr = `<span class="block text-[8.5px] font-extrabold ${isLoanDay ? 'text-rose-600' : 'text-slate-600'} truncate mt-0.5">${displaySum}</span>`;
+        }
+
+        // RED LOAN BADGE
+        let loanIndicator = '';
+        if (isLoanDay) {
+          loanIndicator = `<span class="block text-[8px] bg-rose-600 text-white font-black px-1 py-0.2 rounded-full leading-tight mt-0.5">대출</span>`;
+        }
+
+        let cellStyle = 'bg-white hover:bg-slate-50 border-slate-100';
+        if (isSelected) {
+          cellStyle = 'bg-indigo-600 text-white font-bold border-indigo-600 shadow-md';
+        } else if (isLoanDay) {
+          cellStyle = 'bg-rose-50/80 border-2 border-rose-400/90 text-rose-950 font-bold';
+        }
+
+        daysHtml += `
+          <div onclick="selectCalendarDate('${dateStr}')" class="h-14 rounded-xl p-1 flex flex-col items-center justify-start cursor-pointer border transition relative ${cellStyle}">
+            <span class="text-xs ${isSelected ? 'text-white' : (isLoanDay ? 'text-rose-700 font-black' : 'text-slate-700')}">${day}</span>
+            ${loanIndicator}
+            ${badgeStr}
+          </div>
+        `;
+      }
+
+      grid.innerHTML = daysHtml;
+      renderDailyTransactions();
+    }
+
+    function selectCalendarDate(dateStr) {
+      playTapSound('C5');
+      selectedCalendarDate = dateStr;
+      renderCalendar();
+    }
+
+    function renderDailyTransactions() {
+      document.getElementById('selectedDateTitle').textContent = `${selectedCalendarDate} 지출 내역`;
+      const dayTxs = transactions.filter(t => t.date === selectedCalendarDate);
+      const dayTotal = dayTxs.reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
+      document.getElementById('selectedDateTotal').textContent = dayTotal.toLocaleString('ko-KR') + '원';
+
+      // Check if selected date is a loan pay day
+      const dayNum = Number(selectedCalendarDate.split('-')[2]);
+      const matchingLoans = loans.filter(l => Number(l.payDay) === dayNum);
+      const loanAlertBox = document.getElementById('calendarLoanAlertBox');
+      const loanAlertDetails = document.getElementById('calendarLoanAlertDetails');
+
+      if (matchingLoans.length > 0) {
+        loanAlertBox.classList.remove('hidden');
+        loanAlertDetails.innerHTML = matchingLoans.map(l => {
+          return `<div>• <strong>${escapeHtml(l.name)}</strong> : 출금계좌 <strong>${escapeHtml(l.account || l.bank + ' 계좌')}</strong> (금리 ${l.rate}%)</div>`;
+        }).join('');
+      } else {
+        loanAlertBox.classList.add('hidden');
+      }
+
+      const container = document.getElementById('selectedDateTransactions');
+      if (dayTxs.length === 0) {
+        container.innerHTML = '<div class="text-xs text-slate-400 py-3 text-center">이 날짜에 기록된 지출이 없습니다.</div>';
+        return;
+      }
+
+      container.innerHTML = dayTxs.map(t => {
+        return `
+          <div class="flex items-center justify-between text-xs py-2 px-3 bg-white rounded-xl border border-slate-100 shadow-2xs">
+            <div class="flex items-center space-x-1.5 truncate">
+              <span class="font-extrabold text-slate-800">${escapeHtml(t.merchant)}</span>
+              <span class="text-[10px] text-slate-400 font-medium">${t.isLoan ? '🏦 ' + escapeHtml(t.cardName || '계좌출금') : escapeHtml(t.cardName || '')}</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="font-bold text-slate-900">-${Number(t.amount).toLocaleString('ko-KR')}원</span>
+              <button onclick="promptDeleteTransaction('${t.id}')" class="text-slate-300 hover:text-rose-500">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderLoanView() {
+      const container = document.getElementById('loanCardList');
+      document.getElementById('loanTotalCountBadge').textContent = `대출 ${loans.length}건`;
+
+      if (loans.length === 0) {
+        container.innerHTML = `
+          <div class="py-10 text-center text-slate-400 space-y-2 bg-slate-50 rounded-2xl border border-dashed border-slate-200 p-4">
+            <p class="text-xs font-semibold">등록된 대출 내역이 없습니다.</p>
+            <button onclick="openLoanModal()" class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-600/20 active:scale-95 transition">
+              첫 대출 등록하기
+            </button>
+          </div>
+        `;
+        document.getElementById('totalLoanBalanceAmount').textContent = '0';
+        document.getElementById('totalLoanProgressPercent').textContent = '0%';
+        document.getElementById('totalLoanProgressBar').style.width = '0%';
+        document.getElementById('totalInitialLoanAmount').textContent = '최초 원금: 0원';
+        document.getElementById('totalRepaidLoanAmount').textContent = '상환 완료: 0원';
+        document.getElementById('monthlyLoanTotalDue').textContent = '0원';
+        document.getElementById('monthlyLoanInterestDue').textContent = '0원';
+        return;
+      }
+
+      let totalBalance = 0;
+      let totalOriginal = 0;
+      let monthlyTotalDue = 0;
+      let monthlyInterestDue = 0;
+
+      loans.forEach(loan => {
+        const bal = Number(loan.balance) || 0;
+        const orig = Number(loan.original) || 0;
+        totalBalance += bal;
+        totalOriginal += orig;
+
+        const rate = (Number(loan.rate) || 0) / 100 / 12;
+        let monthInterest = Math.round(bal * rate);
+        let monthPrincipal = 0;
+
+        if (loan.type === 'equal_principal_interest') {
+          const n = Number(loan.termMonths) || 12;
+          if (rate > 0) {
+            const monthlyPayment = Math.round((bal * rate * Math.pow(1 + rate, n)) / (Math.pow(1 + rate, n) - 1));
+            monthPrincipal = Math.max(0, monthlyPayment - monthInterest);
+          } else {
+            monthPrincipal = Math.round(bal / n);
+          }
+        } else if (loan.type === 'equal_principal') {
+          const n = Number(loan.termMonths) || 12;
+          monthPrincipal = Math.round(orig / n);
+        } else {
+          monthPrincipal = 0;
+        }
+
+        monthlyTotalDue += (monthPrincipal + monthInterest);
+        monthlyInterestDue += monthInterest;
+      });
+
+      const totalRepaid = Math.max(0, totalOriginal - totalBalance);
+      const overallPercent = totalOriginal > 0 ? Math.min(100, Math.round((totalRepaid / totalOriginal) * 100)) : 0;
+
+      document.getElementById('totalLoanBalanceAmount').textContent = totalBalance.toLocaleString('ko-KR');
+      document.getElementById('totalLoanProgressPercent').textContent = `${overallPercent}%`;
+      document.getElementById('totalLoanProgressBar').style.width = `${overallPercent}%`;
+      document.getElementById('totalInitialLoanAmount').textContent = `최초 원금: ${totalOriginal.toLocaleString('ko-KR')}원`;
+      document.getElementById('totalRepaidLoanAmount').textContent = `상환 완료: ${totalRepaid.toLocaleString('ko-KR')}원`;
+      document.getElementById('monthlyLoanTotalDue').textContent = monthlyTotalDue.toLocaleString('ko-KR') + '원';
+      document.getElementById('monthlyLoanInterestDue').textContent = monthlyInterestDue.toLocaleString('ko-KR') + '원';
+
+      container.innerHTML = loans.map(loan => {
+        const bal = Number(loan.balance) || 0;
+        const orig = Number(loan.original) || 0;
+        const repaid = Math.max(0, orig - bal);
+        const percent = orig > 0 ? Math.min(100, Math.round((repaid / orig) * 100)) : 0;
+
+        const typeLabels = {
+          'equal_principal_interest': '원리금 균등',
+          'equal_principal': '원금 균등',
+          'bullet': '만기 일시'
+        };
+
+        return `
+          <div class="bg-white rounded-3xl p-4 border border-slate-100 shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="flex items-center space-x-1.5 mb-1">
+                  <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-bold">${escapeHtml(loan.bank)} · ${typeLabels[loan.type] || '원리금'}</span>
+                  <span class="text-[10px] bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded-full font-bold">계좌자동이체</span>
+                </div>
+                <h4 class="font-extrabold text-sm text-slate-800">${escapeHtml(loan.name)}</h4>
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] text-slate-400">금리</span>
+                <div class="text-xs font-black text-indigo-600">${loan.rate}%</div>
+              </div>
+            </div>
+
+            <!-- Designated Account Bar -->
+            <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-2.5 flex items-center justify-between text-xs">
+              <div class="flex items-center space-x-1.5 text-slate-600">
+                <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                <span class="font-bold">출금계좌:</span>
+                <span class="font-mono font-bold text-slate-900">${escapeHtml(loan.account || loan.bank + ' 자동이체 계좌')}</span>
+              </div>
+              <span class="text-[10px] text-rose-600 font-extrabold bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">매월 ${loan.payDay || 25}일</span>
+            </div>
+
+            <!-- Balances -->
+            <div class="flex items-baseline justify-between pt-1">
+              <div>
+                <span class="text-[10px] text-slate-400 block">남은 잔액</span>
+                <span class="text-lg font-extrabold text-slate-900">${bal.toLocaleString('ko-KR')}원</span>
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] text-slate-400 block">상환율</span>
+                <span class="text-xs font-black text-emerald-600">${percent}%</span>
+              </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="space-y-1">
+              <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                <div class="bg-indigo-600 h-1.5 rounded-full" style="width: ${percent}%"></div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex space-x-2 pt-1 border-t border-slate-100">
+              <button onclick="openLoanRepayModal('${loan.id}')" class="flex-1 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs transition">
+                계좌 상환 기록 & 잔액 차감
+              </button>
+              <button onclick="deleteLoan('${loan.id}')" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-300 hover:text-rose-600 hover:bg-rose-50 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function deleteLoan(loanId) {
+      playTapSound('D4');
+      const target = loans.find(l => l.id === loanId);
+      if (!target) return;
+      document.getElementById('confirmTitle').textContent = '대출 삭제';
+      document.getElementById('confirmDesc').innerHTML = `<strong>[${escapeHtml(target.name)}]</strong> 대출을 삭제하시겠습니까?`;
+      document.getElementById('confirmDialog').classList.remove('hidden');
+
+      pendingConfirmAction = () => {
+        loans = loans.filter(l => l.id !== loanId);
+        saveLoans();
+        renderLoanView();
+        showToast('대출이 삭제되었습니다.');
+      };
+    }
+
+    function openLoanRepayModal(loanId) {
+      playTapSound('C5');
+      const loan = loans.find(l => l.id === loanId);
+      if (!loan) return;
+      document.getElementById('repayLoanId').value = loan.id;
+      document.getElementById('repayModalLoanTitle').textContent = `[${loan.name}] 상환`;
+      document.getElementById('repayModalAccountBadge').textContent = `출금계좌: ${loan.account || loan.bank}`;
+      document.getElementById('inputRepayDate').value = getTodayDateStr();
+
+      const rate = (Number(loan.rate) || 0) / 100 / 12;
+      const interestEst = Math.round((Number(loan.balance) || 0) * rate);
+      document.getElementById('inputRepayInterest').value = interestEst;
+      document.getElementById('inputRepayPrincipal').value = '';
+
+      document.getElementById('loanRepayModal').classList.remove('hidden');
+    }
+
+    function closeLoanRepayModal() {
+      document.getElementById('loanRepayModal').classList.add('hidden');
+    }
+
+    function handleRepaySubmit(e) {
+      e.preventDefault();
+      const loanId = document.getElementById('repayLoanId').value;
+      const loan = loans.find(l => l.id === loanId);
+      if (!loan) return;
+
+      const date = document.getElementById('inputRepayDate').value;
+      const principal = Number(document.getElementById('inputRepayPrincipal').value) || 0;
+      const interest = Number(document.getElementById('inputRepayInterest').value) || 0;
+      const totalRepay = principal + interest;
+
+      if (totalRepay <= 0) {
+        showToast('상환 금액을 입력해주세요.');
+        return;
+      }
+
+      loan.balance = Math.max(0, (Number(loan.balance) || 0) - principal);
+      saveLoans();
+
+      // NOT a credit card purchase: dedicated bank account withdrawal
+      const accountDesc = loan.account ? `계좌(${loan.account})` : `${loan.bank} 계좌`;
+      const newTx = {
+        id: 'tx_loan_' + Date.now(),
+        date: date,
+        amount: totalRepay,
+        merchant: `${loan.name} 상환 (${accountDesc})`,
+        cardId: '',
+        cardName: accountDesc,
+        category: 'living',
+        categoryName: '대출상환',
+        isLoan: true,
+        principalAmount: principal,
+        interestAmount: interest
+      };
+
+      transactions.unshift(newTx);
+      saveTransactions();
+      syncAddGoogleSheet(newTx);
+
+      closeLoanRepayModal();
+      refreshApp();
+      showToast(`원금 ${principal.toLocaleString()}원 상환 완료!`);
+    }
+
+    function openExpenseModal(presetDate = null) {
+      playTapSound('C5');
+      const modal = document.getElementById('expenseModal');
+      const sheet = document.getElementById('expenseSheetContent');
+      
+      document.getElementById('inputExpDate').value = presetDate || getTodayDateStr();
+      document.getElementById('inputExpAmount').value = '';
+      document.getElementById('inputExpMerchant').value = '';
+      document.getElementById('checkIsFixed').checked = false;
+      document.getElementById('checkAutoRecurring').checked = false;
+      document.getElementById('fixedAutoSubOption').classList.add('hidden');
+
+      setPaymentType('onetime');
+      renderModalCardSelector();
+      renderModalCategoryGrid();
+
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        sheet.classList.remove('closed');
+      }, 10);
+    }
+
+    function closeExpenseModal() {
+      const modal = document.getElementById('expenseModal');
+      const sheet = document.getElementById('expenseSheetContent');
+      sheet.classList.add('closed');
+      modal.classList.add('opacity-0');
+      setTimeout(() => modal.classList.add('hidden'), 220);
+    }
+
+    function setPaymentType(type) {
+      currentExpensePaymentType = type;
+      const btnOne = document.getElementById('btnModeOnetime');
+      const btnInst = document.getElementById('btnModeInstallment');
+      const box = document.getElementById('installmentConfigBox');
+
+      if (type === 'installment') {
+        btnInst.className = 'px-3 py-1 rounded-lg bg-white text-indigo-600 shadow-sm transition';
+        btnOne.className = 'px-3 py-1 rounded-lg text-slate-600 transition';
+        box.classList.remove('hidden');
+        calculateInstallmentPreview();
+      } else {
+        btnOne.className = 'px-3 py-1 rounded-lg bg-white text-indigo-600 shadow-sm transition';
+        btnInst.className = 'px-3 py-1 rounded-lg text-slate-600 transition';
+        box.classList.add('hidden');
+      }
+    }
+
+    function calculateInstallmentPreview() {
+      const amount = Number(document.getElementById('inputExpAmount').value) || 0;
+      const months = Number(document.getElementById('selectInstallmentMonths').value) || 3;
+      const monthlyEst = Math.round(amount / months);
+      document.getElementById('installmentPreviewNote').textContent = `매달 약 ${monthlyEst.toLocaleString('ko-KR')}원씩 ${months}개월 분할 청구`;
+    }
+
+    function addAmountToInput(add) {
+      playTapSound('E5');
+      const input = document.getElementById('inputExpAmount');
+      const current = Number(input.value) || 0;
+      input.value = current + add;
+      if (currentExpensePaymentType === 'installment') calculateInstallmentPreview();
+    }
+
+    function clearAmountInput() {
+      playTapSound('D4');
+      document.getElementById('inputExpAmount').value = '';
+      if (currentExpensePaymentType === 'installment') calculateInstallmentPreview();
+    }
+
+    function toggleFixedSubOption() {
+      const isFixed = document.getElementById('checkIsFixed').checked;
+      const sub = document.getElementById('fixedAutoSubOption');
+      if (isFixed) sub.classList.remove('hidden');
+      else {
+        sub.classList.add('hidden');
+        document.getElementById('checkAutoRecurring').checked = false;
+      }
+    }
+
+    function renderModalCardSelector() {
+      const container = document.getElementById('modalCardButtonGrid');
+      container.innerHTML = cards.map(c => {
+        const cTheme = CARD_COLOR_PRESETS.find(p => p.id === c.colorTheme) || CARD_COLOR_PRESETS[0];
+        const isSelected = selectedExpenseCardId === c.id;
+        return `
+          <button type="button" onclick="selectExpenseCard('${c.id}')" class="p-2.5 rounded-xl border text-left transition flex items-center justify-between ${isSelected ? 'border-indigo-600 bg-indigo-50/50 ring-1 ring-indigo-500' : 'border-slate-200 hover:bg-slate-50'}">
+            <div class="flex items-center space-x-2 truncate">
+              <span class="w-3 h-3 rounded-full bg-gradient-to-r ${cTheme.class}"></span>
+              <span class="text-xs font-bold text-slate-800 truncate">${escapeHtml(c.name)}</span>
+            </div>
+            ${isSelected ? '<span class="text-indigo-600 text-xs">✓</span>' : ''}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectExpenseCard(cardId) {
+      playTapSound('E5');
+      selectedExpenseCardId = cardId;
+      renderModalCardSelector();
+    }
+
+    function renderModalCategoryGrid() {
+      const container = document.getElementById('categoryGrid');
+      container.innerHTML = CATEGORIES.map(cat => {
+        const isSelected = selectedExpenseCategory === cat.id;
+        return `
+          <button type="button" onclick="selectExpenseCategory('${cat.id}')" class="py-2 px-1 rounded-xl flex flex-col items-center justify-center transition border ${isSelected ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm' : 'bg-slate-50 text-slate-700 border-slate-100 hover:bg-slate-100'}">
+            <span class="text-base">${cat.icon}</span>
+            <span class="text-[10px] font-bold mt-0.5">${cat.name}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectExpenseCategory(catId) {
+      playTapSound('E5');
+      selectedExpenseCategory = catId;
+      renderModalCategoryGrid();
+    }
+
+    function handleExpenseFormSubmit(e) {
+      e.preventDefault();
+      const dateVal = document.getElementById('inputExpDate').value;
+      const totalAmount = Number(document.getElementById('inputExpAmount').value) || 0;
+      const merchant = document.getElementById('inputExpMerchant').value.trim();
+      const isFixed = document.getElementById('checkIsFixed').checked;
+      const autoRecurring = document.getElementById('checkAutoRecurring').checked;
+
+      if (!totalAmount || !merchant) return;
+
+      const card = cards.find(c => c.id === selectedExpenseCardId) || cards[0];
+      const cat = CATEGORIES.find(c => c.id === selectedExpenseCategory) || CATEGORIES[0];
+
+      if (currentExpensePaymentType === 'installment') {
+        const months = Number(document.getElementById('selectInstallmentMonths').value) || 3;
+        const monthlyBase = Math.floor(totalAmount / months);
+        const remainder = totalAmount - (monthlyBase * months);
+
+        const [startYear, startMonth, startDay] = dateVal.split('-').map(Number);
+        const parentGroupId = 'inst_grp_' + Date.now();
+
+        for (let m = 0; m < months; m++) {
+          const installmentDate = new Date(startYear, startMonth - 1 + m, startDay);
+          const iYear = installmentDate.getFullYear();
+          const iMonth = String(installmentDate.getMonth() + 1).padStart(2, '0');
+          const iDay = String(installmentDate.getDate()).padStart(2, '0');
+          const iDateStr = `${iYear}-${iMonth}-${iDay}`;
+
+          const instAmount = (m === 0) ? (monthlyBase + remainder) : monthlyBase;
+
+          const instTx = {
+            id: 'tx_inst_' + Date.now() + '_' + m,
+            groupId: parentGroupId,
+            date: iDateStr,
+            amount: instAmount,
+            merchant: `${merchant} (${m + 1}/${months}회차)`,
+            cardId: card.id,
+            cardName: card.name,
+            category: cat.id,
+            categoryName: cat.name,
+            isInstallment: true,
+            installmentCurrent: m + 1,
+            installmentMonths: months,
+            installmentTotalAmount: totalAmount
+          };
+
+          transactions.unshift(instTx);
+          syncAddGoogleSheet(instTx);
+        }
+
+        saveTransactions();
+        showToast(`${months}개월 할부 등록 완료!`);
+      } else {
+        let recurringId = null;
+        if (isFixed && autoRecurring) {
+          recurringId = 'rec_' + Date.now();
+          const payDay = Number(dateVal.split('-')[2]) || 1;
+          recurringTemplates.push({
+            id: recurringId,
+            name: merchant,
+            cardId: card.id,
+            amount: totalAmount,
+            day: payDay,
+            category: cat.id
+          });
+          saveRecurring();
+        }
+
+        const newTx = {
+          id: 'tx_' + Date.now(),
+          date: dateVal,
+          amount: totalAmount,
+          merchant: merchant,
+          cardId: card.id,
+          cardName: card.name,
+          category: cat.id,
+          categoryName: cat.name,
+          isFixed: isFixed,
+          isInstallment: false,
+          recurringId: recurringId
+        };
+
+        transactions.unshift(newTx);
+        saveTransactions();
+        syncAddGoogleSheet(newTx);
+        showToast('지출이 저장되었습니다.');
+      }
+
+      closeExpenseModal();
+      refreshApp();
+    }
+
+    function openLoanModal() {
+      playTapSound('C5');
+      const modal = document.getElementById('loanModal');
+      const sheet = document.getElementById('loanSheetContent');
+      
+      const selectDay = document.getElementById('selectLoanPayDay');
+      selectDay.innerHTML = Array.from({ length: 31 }, (_, i) => `<option value="${i + 1}" ${i + 1 === 25 ? 'selected' : ''}>매월 ${i + 1}일</option>`).join('');
+
+      document.getElementById('loanForm').reset();
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        sheet.classList.remove('closed');
+      }, 10);
+    }
+
+    function closeLoanModal() {
+      const modal = document.getElementById('loanModal');
+      const sheet = document.getElementById('loanSheetContent');
+      sheet.classList.add('closed');
+      modal.classList.add('opacity-0');
+      setTimeout(() => modal.classList.add('hidden'), 220);
+    }
+
+    function handleLoanFormSubmit(e) {
+      e.preventDefault();
+      const newLoan = {
+        id: 'loan_' + Date.now(),
+        name: document.getElementById('inputLoanName').value.trim(),
+        bank: document.getElementById('inputLoanBank').value.trim(),
+        account: document.getElementById('inputLoanAccount').value.trim(), // Specific withdrawal account
+        rate: Number(document.getElementById('inputLoanRate').value) || 0,
+        original: Number(document.getElementById('inputLoanOriginal').value) || 0,
+        balance: Number(document.getElementById('inputLoanBalance').value) || 0,
+        type: document.getElementById('selectLoanType').value,
+        payDay: Number(document.getElementById('selectLoanPayDay').value) || 25,
+        termMonths: Number(document.getElementById('inputLoanTermMonths').value) || 120,
+        autoSync: document.getElementById('checkLoanAutoSync').checked
+      };
+
+      loans.push(newLoan);
+      saveLoans();
+      closeLoanModal();
+      renderLoanView();
+      if (currentTab === 'calendar') renderCalendar();
+      showToast('대출 정보 및 출금계좌가 등록되었습니다.');
+    }
+
+    function openCardSettingsModal() {
+      playTapSound('C5');
+      const modal = document.getElementById('cardSettingsModal');
+      const sheet = document.getElementById('cardSheetContent');
+      const container = document.getElementById('cardSettingsList');
+
+      container.innerHTML = cards.map((c, idx) => {
+        return `
+          <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-700">신용카드 ${idx + 1}</span>
+            </div>
+            <input type="text" id="cardNameInput_${c.id}" value="${escapeHtml(c.name)}" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-800">
+            <div>
+              <span class="block text-[10px] text-slate-400 mb-1">테마 색상 선택</span>
+              <div class="grid grid-cols-4 gap-1.5">
+                ${CARD_COLOR_PRESETS.map(p => `
+                  <button type="button" onclick="changeCardColorPreset('${c.id}', '${p.id}')" class="h-6 rounded-lg bg-gradient-to-r ${p.class} text-[9px] text-white font-bold transition ${c.colorTheme === p.id ? 'ring-2 ring-indigo-600 ring-offset-1' : ''}"></button>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        sheet.classList.remove('closed');
+      }, 10);
+    }
+
+    function changeCardColorPreset(cardId, colorId) {
+      playTapSound('E5');
+      const c = cards.find(item => item.id === cardId);
+      if (c) c.colorTheme = colorId;
+      openCardSettingsModal();
+    }
+
+    function closeCardSettingsModal() {
+      const modal = document.getElementById('cardSettingsModal');
+      const sheet = document.getElementById('cardSheetContent');
+      sheet.classList.add('closed');
+      modal.classList.add('opacity-0');
+      setTimeout(() => modal.classList.add('hidden'), 220);
+    }
+
+    function saveCardSettings() {
+      cards.forEach(c => {
+        const input = document.getElementById(`cardNameInput_${c.id}`);
+        if (input && input.value.trim()) c.name = input.value.trim();
+      });
+      saveCards();
+      closeCardSettingsModal();
+      refreshApp();
+      showToast('카드 설정이 저장되었습니다.');
+    }
+
+    function openRecurringModal() {
+      playTapSound('C5');
+      const modal = document.getElementById('recurringModal');
+      const sheet = document.getElementById('recurringSheetContent');
+      const container = document.getElementById('recurringItemList');
+
+      if (recurringTemplates.length === 0) {
+        container.innerHTML = '<div class="text-xs text-slate-400 text-center py-4">등록된 고정지출 템플릿이 없습니다.</div>';
+      } else {
+        container.innerHTML = recurringTemplates.map(r => {
+          const card = cards.find(c => c.id === r.cardId);
+          return `
+            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-200">
+              <div>
+                <span class="text-xs font-bold text-slate-800">${escapeHtml(r.name)}</span>
+                <span class="text-[10px] text-slate-400 block">매달 ${r.day}일 · ${escapeHtml(card ? card.name : '')}</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="text-xs font-black text-indigo-600">${Number(r.amount).toLocaleString('ko-KR')}원</span>
+                <button onclick="deleteRecurringTemplate('${r.id}')" class="text-slate-300 hover:text-rose-500">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        sheet.classList.remove('closed');
+      }, 10);
+    }
+
+    function closeRecurringModal() {
+      const modal = document.getElementById('recurringModal');
+      const sheet = document.getElementById('recurringSheetContent');
+      sheet.classList.add('closed');
+      modal.classList.add('opacity-0');
+      setTimeout(() => modal.classList.add('hidden'), 220);
+    }
+
+    function deleteRecurringTemplate(id) {
+      playTapSound('D4');
+      recurringTemplates = recurringTemplates.filter(r => r.id !== id);
+      saveRecurring();
+      openRecurringModal();
+      showToast('고정지출 템플릿 삭제됨');
+    }
+
+    function applyRecurringToCurrentMonth() {
+      autoApplyRecurringForMonth(currentYear, currentMonth);
+      closeRecurringModal();
+      refreshApp();
+    }
+
+    function openGoogleSheetModal() {
+      playTapSound('C5');
+      document.getElementById('inputWebhookUrl').value = googleSheetWebhookUrl || '';
+      document.getElementById('sheetModal').classList.remove('hidden');
+    }
+
+    function closeGoogleSheetModal() {
+      document.getElementById('sheetModal').classList.add('hidden');
+    }
+
+    function saveGoogleSheetUrl() {
+      const url = document.getElementById('inputWebhookUrl').value.trim();
+      googleSheetWebhookUrl = url;
+      safeStorage.set('my_sheet_webhook_url', url);
+      showToast('스프레드시트 URL이 저장되었습니다.');
+      closeGoogleSheetModal();
+    }
+
+    function testGoogleSheetSync() {
+      const testItem = {
+        id: 'test_' + Date.now(),
+        date: getTodayDateStr(),
+        cardName: '연동테스트',
+        categoryName: '기타/이체',
+        merchant: '★가계부 연동 테스트★',
+        amount: 100
+      };
+      syncAddGoogleSheet(testItem);
+    }
+
+    function openMonthPickerModal() {
+      playTapSound('C5');
+      const selectMonth = document.getElementById('pickerSelectMonth');
+      selectMonth.innerHTML = Array.from({ length: 12 }, (_, i) => `<option value="${i + 1}" ${i + 1 === currentMonth ? 'selected' : ''}>${i + 1}월</option>`).join('');
+      document.getElementById('pickerSelectYear').value = currentYear;
+      document.getElementById('monthPickerModal').classList.remove('hidden');
+    }
+
+    function closeMonthPickerModal() {
+      document.getElementById('monthPickerModal').classList.add('hidden');
+    }
+
+    function applyPickedMonth() {
+      currentYear = Number(document.getElementById('pickerSelectYear').value);
+      currentMonth = Number(document.getElementById('pickerSelectMonth').value);
+      closeMonthPickerModal();
+      autoApplyRecurringForMonth(currentYear, currentMonth);
+      refreshApp();
+    }
+
+    function getTodayDateStr() {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function initializeApp() {
+      loadSavedState();
+      autoApplyRecurringForMonth(currentYear, currentMonth);
+      refreshApp();
+      switchMainTab('transactions');
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeApp);
+    } else {
+      initializeApp();
+    }
+  </script>
+</body>
+</html>
