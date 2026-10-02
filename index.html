@@ -1169,7 +1169,6 @@
         if (data && data.status === "SUCCESS") {
           // A. 지출 내역 동기화
           if (Array.isArray(data.transactions)) {
-            // [버그 방지 2] 구글 시트에서 가져올 때 한글 카테고리/카드명 매칭 실패로 색상/정산이 풀리던 버그 해결
             transactions = data.transactions.map(item => {
               const matchedCat = CATEGORIES.find(c => c.id === item.category || c.name === item.category || c.name === item.categoryName);
               const matchedCard = cards.find(c => c.id === item.cardId || c.name === item.cardName);
@@ -1185,49 +1184,19 @@
             saveTransactions();
           }
 
-          // B. 대출 정보 동기화 (폰에서 등록한 대출 ➔ 노트북으로 즉시 가져옴)
-      const syncIcon = document.getElementById('syncIconSvg');
-      const dot = document.getElementById('syncStatusDot');
-      if (syncIcon) syncIcon.classList.add('spinning');
-      if (dot) dot.className = 'absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-400 animate-ping';
-
-      if (isManual) {
-        showToast('☁️ 구글 시트에서 최신 데이터를 불러옵니다...');
-      }
-
-      try {
-        const response = await fetch(googleSheetWebhookUrl, { method: 'GET' });
-        if (!response.ok) throw new Error('HTTP ' + response.status);
-        const data = await response.json();
-
-        if (data && data.status === "SUCCESS") {
-          // A. 지출 내역 동기화
-          if (Array.isArray(data.transactions)) {
-            transactions = data.transactions.map(item => {
-              const matchedCat = CATEGORIES.find(c => c.id === item.category || c.name === item.category || c.name === item.categoryName);
-              const matchedCard = cards.find(c => c.id === item.cardId || c.name === item.cardName);
-              return {
-                ...item,
-                amount: Number(item.amount) || 0,
-                category: matchedCat ? matchedCat.id : (item.category || 'etc'),
-                categoryName: matchedCat ? matchedCat.name : (item.categoryName || '기타/이체'),
-                cardId: matchedCard ? matchedCard.id : (item.cardId || ''),
-                cardName: matchedCard ? matchedCard.name : (item.cardName || '')
-              };
-            });
-            saveTransactions();
-          }
-
+          // B. 대출 정보 동기화
           if (Array.isArray(data.loans) && data.loans.length > 0) {
             loans = data.loans;
             safeStorage.set('my_loans_v4', JSON.stringify(loans));
           }
 
+          // C. 카드 정보 동기화
           if (Array.isArray(data.cards) && data.cards.length > 0) {
             cards = data.cards;
             safeStorage.set('my_cards_v4', JSON.stringify(cards));
           }
 
+          // D. 고정지출 템플릿 동기화 (예시 넷플릭스/통신비 제외)
           if (Array.isArray(data.recurring)) {
             recurringTemplates = data.recurring.filter(r => r.name !== '넷플릭스 구독' && r.name !== '통신비 요금');
             safeStorage.set('my_recurring_v4', JSON.stringify(recurringTemplates));
