@@ -621,7 +621,7 @@
     let enteredPin = '';
     let isAppUnlocked = false;
 
-    const DEFAULT_WEBHOOK_URL = '';
+    const DEFAULT_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwAsVuHiP6BToJwL6C5j0m7pMSAqeu-MC96uYNt5xODkH0J0klnDGOXmQNVZLn4Pft2/exec';
     const memoryStore = {};
     const safeStorage = {
       get(key, fallback = null) { try { const val = localStorage.getItem(key); return val !== null ? val : fallback; } catch (e) { return memoryStore[key] !== undefined ? memoryStore[key] : fallback; } },
@@ -786,7 +786,10 @@
 
     /* [핵심 패치 1] 오프라인 우선(자가치유) 방식의 안전한 병합 로직 */
     async function syncPullFromGoogleSheet(isManual = false) {
-      if (!googleSheetWebhookUrl) return;
+      if (!googleSheetWebhookUrl) {
+        if (isManual) showToast('⚙️ 설정에서 구글 시트 URL이 비어있습니다.');
+        return;
+      }
       if (isSyncing) return;
       isSyncing = true;
       const syncIcon = document.getElementById('syncIconSvg');
@@ -875,7 +878,10 @@
     }
 
     function syncPushConfigToGoogleSheet(showToastAlert = false) {
-      if (!googleSheetWebhookUrl) return;
+      if (!googleSheetWebhookUrl) {
+        if (showToastAlert) showToast('⚙️ 구글 시트 URL이 등록되지 않았습니다.');
+        return;
+      }
       try {
         const payload = { action: 'SAVE_CONFIG', loans, cards, recurring: recurringTemplates };
         fetch(googleSheetWebhookUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
