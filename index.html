@@ -784,10 +784,10 @@
     function saveLoans() { safeStorage.set('my_loans_v4', JSON.stringify(loans)); syncPushConfigToGoogleSheet(); }
     function saveRecurring() { safeStorage.set('my_recurring_v4', JSON.stringify(recurringTemplates)); syncPushConfigToGoogleSheet(); }
 
-    /* [핵심 패치 1] 오프라인 우선(자가치유) 방식의 안전한 병합 로직 */
+    /* [핵심 패치 1] 오프라인 우선(자가치유) 및 브라우저 캐시 무력화 병합 로직 */
     async function syncPullFromGoogleSheet(isManual = false) {
       if (!googleSheetWebhookUrl) {
-        if (isManual) showToast('⚙️ 설정에서 구글 시트 URL이 비어있습니다.');
+        if (isManual) showToast('⚙️ 설정에서 구글 시트 URL을 먼저 등록해주세요.');
         return;
       }
       if (isSyncing) return;
@@ -799,7 +799,9 @@
       if (isManual) showToast('☁️ 동기화(데이터 점검) 중...');
 
       try {
-        const response = await fetch(googleSheetWebhookUrl, { method: 'GET' });
+        // [버그 수정 1] 브라우저 캐시 무력화 (중복 증식 원천 차단)
+        const cacheBusterUrl = googleSheetWebhookUrl + (googleSheetWebhookUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
+        const response = await fetch(cacheBusterUrl, { method: 'GET', headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' } });
         if (!response.ok) throw new Error('HTTP ' + response.status);
         const data = await response.json();
 
@@ -807,13 +809,22 @@
           let remoteParsed = [];
           if (Array.isArray(data.transactions)) {
              remoteParsed = data.transactions
-              .filter(item => !deletedTxIds.includes(item.id)) // 폰에서 지운건 절대 안살아나게 차단
+              .filter(item => !deletedTxIds.includes(item.id))
               .map(item => {
                 const matchedCat = CATEGORIES.find(c => c.id === item.category || c.name === item.category || c.name === item.categoryName);
                 const isCashTx = (item.cardId === 'cash') || (item.cardName && (item.cardName.includes('현금') || item.cardName.includes('이체')));
                 const matchedCard = isCashTx ? null : cards.find(c => c.id === item.cardId || c.name === item.cardName);
+                
+                // [버그 수정 2] 시트에서 날짜 형식이 깨졌을 경우(Wed Nov 18...) 자동 복원
+                let safeDate = item.date || '';
+                if (safeDate && !/^\d{4}-\d{2}-\d{2}/.test(safeDate)) {
+                  const d = new Date(safeDate);
+                  if (!isNaN(d.getTime())) safeDate = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+                }
+
                 return {
                   ...item,
+                  date: safeDate,
                   amount: Number(item.amount) || 0,
                   category: matchedCat ? matchedCat.id : (item.category || 'etc'),
                   categoryName: matchedCat ? matchedCat.name : (item.categoryName || '기타/이체'),
@@ -824,37 +835,30 @@
               });
           }
 
-          // ** 안전 병합 (자가치유 로직) **
           const remoteIds = new Set(remoteParsed.map(t => t.id));
           const localMap = new Map();
           transactions.forEach(t => localMap.set(t.id, t));
 
-          let missingInServer = []; // 시트에서 누락된 데이터들
+          let missingInServer = [];
 
-          // 1. 원격 데이터로 로컬 덮어쓰기 (수정사항 등 반영)
           remoteParsed.forEach(t => localMap.set(t.id, t));
 
-          // 2. 로컬에는 있는데 서버(시트)에 없는 데이터 검사
           transactions.forEach(t => {
             if (!remoteIds.has(t.id)) {
               if (!deletedTxIds.includes(t.id)) {
-                // 사용자가 지운 게 아닌데 시트에 없다 -> 시트가 비었거나 날아갔으므로 다시 올릴 준비
                 missingInServer.push(t);
               } else {
-                // 사용자가 정상적으로 앱에서 삭제한 거면 로컬에서도 완전히 지움
                 localMap.delete(t.id);
               }
             }
           });
 
-          // 병합된 결과 저장
           transactions = Array.from(localMap.values()).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
           saveTransactions();
 
-          // 3. 누락된 데이터를 시트로 다시 전송 (자가치유)
           if (missingInServer.length > 0) {
             missingInServer.forEach((tx, idx) => {
-              setTimeout(() => syncAddGoogleSheet(tx), idx * 400); // 꼬이지 않게 0.4초 간격 발송
+              setTimeout(() => syncAddGoogleSheet(tx), idx * 400);
             });
             if (isManual) showToast(`누락된 데이터 ${missingInServer.length}건을 시트로 복구 중...`);
           }
