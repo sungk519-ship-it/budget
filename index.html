@@ -773,12 +773,26 @@
       try {
         const savedCards = safeStorage.get('my_cards_v4'); if (savedCards) cards = JSON.parse(savedCards);
         const savedDeleted = safeStorage.get('my_deleted_tx_ids'); if (savedDeleted) deletedTxIds = JSON.parse(savedDeleted);
-        const savedTxs = safeStorage.get('my_transactions_v4'); if (savedTxs) transactions = JSON.parse(savedTxs);
+        
+        const savedTxs = safeStorage.get('my_transactions_v4'); 
+        if (savedTxs) { 
+          let parsedTxs = JSON.parse(savedTxs);
+          // 🚨 좀비 사냥꾼 백신: 'tx_rec_' 패턴을 가진 과거의 유령 데이터들을 기기 내부에서 강제로 색출하여 영구 삭제합니다.
+          transactions = parsedTxs.filter(t => !(t.id && t.id.includes('tx_rec_')));
+          
+          // 색출해서 지운 게 있다면 기기 저장소에 덮어쓰기 (완전 박멸)
+          if (transactions.length !== parsedTxs.length) {
+            saveTransactions();
+            console.log("좀비 데이터 소각 완료");
+          }
+        }
+
         const savedLoans = safeStorage.get('my_loans_v4'); if (savedLoans) loans = JSON.parse(savedLoans);
         const savedRec = safeStorage.get('my_recurring_v4'); if (savedRec) recurringTemplates = JSON.parse(savedRec);
         const savedUrl = safeStorage.get('my_sheet_webhook_url'); if (savedUrl) googleSheetWebhookUrl = savedUrl;
       } catch (e) { console.error(e); }
     }
+    
     function saveTransactions() { safeStorage.set('my_transactions_v4', JSON.stringify(transactions)); }
     function saveCards() { safeStorage.set('my_cards_v4', JSON.stringify(cards)); syncPushConfigToGoogleSheet(); }
     function saveLoans() { safeStorage.set('my_loans_v4', JSON.stringify(loans)); syncPushConfigToGoogleSheet(); }
