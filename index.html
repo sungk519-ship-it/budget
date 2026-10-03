@@ -801,7 +801,7 @@
       try {
         // [버그 수정 1] 브라우저 캐시 무력화 (중복 증식 원천 차단)
         const cacheBusterUrl = googleSheetWebhookUrl + (googleSheetWebhookUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
-        const response = await fetch(cacheBusterUrl, { method: 'GET', headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' } });
+        const response = await fetch(cacheBusterUrl, { method: 'GET' });
         if (!response.ok) throw new Error('HTTP ' + response.status);
         const data = await response.json();
 
