@@ -1203,6 +1203,73 @@
       const fb = (s) => { const t = document.createElement('textarea'); t.value=s; t.style.position='fixed'; t.style.opacity='0'; document.body.appendChild(t); t.focus(); t.select(); try { document.execCommand('copy'); showToast(`📋 복사됨: ${s}`); } catch(e){} document.body.removeChild(t); };
       if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(()=>showToast(`📋 복사됨: ${text}`)).catch(()=>fb(text)); else fb(text);
     }
+
+    function openLoanModal(loan = null) {
+      playTapSound('C5');
+      document.getElementById('editLoanId').value = loan ? loan.id : '';
+      document.getElementById('inputLoanName').value = loan ? loan.name : '';
+      document.getElementById('inputLoanMonthlyPlanned').value = loan ? loan.monthlyPlanned : '';
+      document.getElementById('inputLoanStartDate').value = loan ? loan.startDate : '';
+      document.getElementById('inputLoanEndDate').value = loan ? loan.endDate : '';
+      document.getElementById('inputLoanBank').value = loan ? loan.bank : '';
+      document.getElementById('inputLoanAccount').value = loan ? loan.account : '';
+      document.getElementById('inputLoanRate').value = loan ? loan.rate : '';
+      
+      const selectPayDay = document.getElementById('selectLoanPayDay');
+      selectPayDay.innerHTML = Array.from({length:31}, (_,i)=>`<option value="${i+1}" ${loan && Number(loan.payDay)===(i+1)?'selected':''}>매월 ${i+1}일</option>`).join('');
+      if(!loan) selectPayDay.value = 25;
+
+      document.getElementById('inputLoanOriginal').value = loan ? loan.original : '';
+      document.getElementById('inputLoanBalance').value = loan ? loan.balance : '';
+      document.getElementById('selectLoanType').value = loan ? loan.type : 'equal_principal_interest';
+      document.getElementById('inputLoanTermMonths').value = loan ? loan.termMonths : '';
+
+      document.getElementById('loanModal').classList.remove('hidden');
+      setTimeout(() => { document.getElementById('loanModal').classList.remove('opacity-0'); document.getElementById('loanSheetContent').classList.remove('closed'); }, 10);
+    }
+
+    function closeLoanModal() {
+      document.getElementById('loanSheetContent').classList.add('closed');
+      document.getElementById('loanModal').classList.add('opacity-0');
+      setTimeout(() => document.getElementById('loanModal').classList.add('hidden'), 220);
+    }
+
+    function handleLoanFormSubmit(e) {
+      e.preventDefault();
+      const editId = document.getElementById('editLoanId').value;
+      const loanData = {
+        name: document.getElementById('inputLoanName').value.trim(),
+        monthlyPlanned: Number(document.getElementById('inputLoanMonthlyPlanned').value) || 0,
+        startDate: document.getElementById('inputLoanStartDate').value,
+        endDate: document.getElementById('inputLoanEndDate').value,
+        bank: document.getElementById('inputLoanBank').value.trim(),
+        account: document.getElementById('inputLoanAccount').value.trim(),
+        rate: Number(document.getElementById('inputLoanRate').value) || 0,
+        payDay: Number(document.getElementById('selectLoanPayDay').value) || 25,
+        original: Number(document.getElementById('inputLoanOriginal').value) || 0,
+        balance: Number(document.getElementById('inputLoanBalance').value) || 0,
+        type: document.getElementById('selectLoanType').value,
+        termMonths: Number(document.getElementById('inputLoanTermMonths').value) || 0
+      };
+
+      if (editId) {
+        const idx = loans.findIndex(l => l.id === editId);
+        if (idx !== -1) {
+          loans[idx] = { ...loans[idx], ...loanData };
+          showToast('대출 정보가 수정되었습니다.');
+        }
+      } else {
+        loanData.id = 'loan_' + Date.now();
+        loans.push(loanData);
+        showToast('새 대출이 등록되었습니다.');
+      }
+      
+      saveLoans();
+      syncPushConfigToGoogleSheet(); // 추가/수정 시 구글 시트에 즉시 백업
+      closeLoanModal();
+      refreshApp();
+    }
+
     function editLoanDirect(id) { const l = loans.find(x => x.id === id); if (l) openLoanModal(l); }
     function deleteLoan(id) {
       playTapSound('D4'); const target = loans.find(l => l.id === id); if (!target) return;
